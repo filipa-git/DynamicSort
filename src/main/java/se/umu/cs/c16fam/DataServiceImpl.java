@@ -12,6 +12,7 @@ public class DataServiceImpl implements DataService {
 
     @Override
     public ArrayList<Integer> getData() {
+        System.err.println("Request to get data recieved.");
         return new ArrayList<>(Arrays.asList(listC));
     }
 }
