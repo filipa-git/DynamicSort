@@ -23,6 +23,7 @@ public class Server {
 
             //Generate data
             System.err.println("Server ready");
+            server.processData();
         }
         catch (RemoteException e) {
             System.err.println("RMI error (server): " + e.getMessage());

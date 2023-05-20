@@ -10,4 +10,6 @@ import java.util.ArrayList;
  */
 public interface DataService extends Remote {
     ArrayList<Integer> getData() throws RemoteException;
+
+    void processData() throws RemoteException;
 }
