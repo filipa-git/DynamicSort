@@ -21,7 +21,7 @@ public class DataProviderServiceImpl implements DataProviderService {
 
     @Override
     public void uploadData(ArrayList<Integer> data) throws RemoteException {
-
+        System.err.println("Got data " + data.toString());
     }
 
     @Override
