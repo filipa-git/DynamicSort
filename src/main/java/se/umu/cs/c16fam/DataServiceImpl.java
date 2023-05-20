@@ -28,6 +28,8 @@ public class DataServiceImpl implements DataService {
             ConcurrentHashMap<>();
     private ConcurrentHashMap<Integer, ReentrantLock> bufLocks = new
             ConcurrentHashMap<>();
+    private ConcurrentHashMap<Integer, Condition> bufConds = new
+            ConcurrentHashMap<>();
     private Set<Integer> doneSet = ConcurrentHashMap.newKeySet();
 
     public DataServiceImpl(BlockingQueue<ArrayList<Integer>> out, int
@@ -51,9 +53,11 @@ public class DataServiceImpl implements DataService {
                 countLock.unlock();
             }
 
-            //Add new buffer and lock
+            //Add new buffer, lock and condition
             buffers.put(n, data);
-            bufLocks.put(n, new ReentrantLock());
+            ReentrantLock l = new ReentrantLock();
+            bufLocks.put(n, l);
+            bufConds.put(n, l.newCondition());
 
             //Unlock when all expected buffers are present
             sortLock.lock();
@@ -74,9 +78,14 @@ public class DataServiceImpl implements DataService {
             }
             lock.lock();
 
-            //Add data
             try {
-                buffers.put(n, data);
+                while (!buffers.get(n).isEmpty())
+                    bufConds.get(n).await();
+                //Add data
+                    buffers.put(n, data);
+            }
+            catch (Exception e) {
+                e.printStackTrace();
             }
             finally {
                 lock.unlock();
@@ -104,7 +113,6 @@ public class DataServiceImpl implements DataService {
             e.printStackTrace();
         }
         finally {
-            countLock.unlock();
             sortLock.unlock();
         }
         System.err.println("Beginning final sorting");
@@ -155,6 +163,7 @@ public class DataServiceImpl implements DataService {
                                 repeat = false;
                             } else {
                                 //allow more data
+                                bufConds.get(i).signal();
                                 bufLocks.get(i).unlock();
                                 bufLocks.get(i).lock();
                                 i--; //repeat this step in for-loop
