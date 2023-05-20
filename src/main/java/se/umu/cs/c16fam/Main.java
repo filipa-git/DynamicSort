@@ -59,6 +59,7 @@ public class Main {
                     //Create registry and bind stub
                     Registry registry = LocateRegistry.createRegistry(1099);
                     registry.rebind("DataProviderService", stub);
+                    System.err.println("Data provider ready");
                 }
                 catch (RemoteException e) {
                     System.err.println("Error (data): " + e.getMessage());

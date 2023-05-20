@@ -38,7 +38,7 @@ public class Server {
                     Registry dataRegistry = LocateRegistry.getRegistry
                             (dataProviderName, dataProviderPort);
                     DataProviderService provider = (DataProviderService)
-                            registry.lookup
+                            dataRegistry.lookup
                             ("DataProviderService");
 
                     while (!done) {

@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
@@ -21,6 +22,7 @@ public class DataServiceImpl implements DataService {
     private ReentrantLock countLock = new ReentrantLock();
     private int expectedSorters = 0;
     private ReentrantLock sortLock = new ReentrantLock();
+    private Condition sortCond = sortLock.newCondition();
     private int bufCount = 0;
     private ConcurrentHashMap<Integer, ArrayList<Integer>> buffers = new
             ConcurrentHashMap<>();
@@ -32,7 +34,6 @@ public class DataServiceImpl implements DataService {
      nSorters) {
         outQueue = out;
         expectedSorters = nSorters;
-        sortLock.lock();
     }
 
     @Override
@@ -55,8 +56,14 @@ public class DataServiceImpl implements DataService {
             bufLocks.put(n, new ReentrantLock());
 
             //Unlock when all expected buffers are present
-            if (bufCount == expectedSorters)
+            sortLock.lock();
+            try {
+                if (bufCount == expectedSorters)
+                    sortCond.signal();
+            }
+            finally {
                 sortLock.unlock();
+            }
         }
         else {
             //Aquire lock
@@ -85,7 +92,21 @@ public class DataServiceImpl implements DataService {
 
     public void sortData() throws RemoteException {
         //Wait for all buffers to be present
+        countLock.lock();
         sortLock.lock();
+        try {
+            while (expectedSorters != bufCount) {
+                countLock.unlock();
+                sortCond.await();
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        finally {
+            countLock.unlock();
+            sortLock.unlock();
+        }
         System.err.println("Beginning final sorting");
 
         //Aquire all buffer locks
