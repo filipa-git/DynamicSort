@@ -4,16 +4,27 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * @author: filip
  * @since: 2023-05-19.
  */
 public class Server {
-    public Server() {
+    private boolean done = false;
+    private ReentrantLock doneLock = new ReentrantLock();
+    private BlockingQueue<ArrayList<Integer>> out = new
+            LinkedBlockingQueue<>();
+
+    public Server(int expected, String dataProviderName, int dataProviderPort) {
         try {
             //Create remote object and stub
-            DataService server = new DataServiceImpl();
+            DataService server = new DataServiceImpl(out, expected);
             DataService stub = (DataService) UnicastRemoteObject.exportObject
                     (server, 0);
 
@@ -21,12 +32,35 @@ public class Server {
             Registry registry = LocateRegistry.createRegistry(1099);
             registry.rebind("DataService", stub);
 
-            //Generate data
+            //Create upload thread
+            Runnable upload = () -> {
+                try {
+                    Registry dataRegistry = LocateRegistry.getRegistry
+                            (dataProviderName, dataProviderPort);
+                    DataProviderService provider = (DataProviderService)
+                            registry.lookup
+                            ("DataProviderService");
+
+                    while (!done) {
+                        provider.uploadData(out.take());
+                    }
+                }
+                catch (Exception e) {
+                    System.err.println("Error (thread): " + e.getMessage());
+                    e.printStackTrace();
+                }
+            };
+            Thread uThread = new Thread(upload);
+            uThread.start();
+
+            //Sort data
             System.err.println("Server ready");
-            server.processData();
+            ((DataServiceImpl)server).sortData();
+            done = true;
+            uThread.join();
         }
-        catch (RemoteException e) {
-            System.err.println("RMI error (server): " + e.getMessage());
+        catch (Exception e) {
+            System.err.println("Error (server): " + e.getMessage());
             e.printStackTrace();
             System.exit(1);
         }

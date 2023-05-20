@@ -1,5 +1,9 @@
 package se.umu.cs.c16fam;
 
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -10,22 +14,55 @@ public class Main {
         if (args.length > 0) {
             //Create server if first arg is "server"
             if (args[0].equals("server")) {
-                new Server();
+                if (args.length == 4) {
+                    try {
+                        int expected = Integer.parseInt(args[1]);
+                        int dataPort = Integer.parseInt(args[3]);
+                        new Server(expected, args[2], dataPort);
+                    }
+                    catch (NumberFormatException e) {
+                        System.err.println(e.getMessage());
+                        System.exit(1);
+                    }
+                }
+                else {
+                    System.err.println("Usage: DynSort {server " +
+                            "<expected> <dataHost> <dataPort>}|{client " +
+                            "[<serverHost> <serverPort> <dataHost> " +
+                            "<dataPort>]}|data");
+                }
             }
             //Create client if first arg is "client"
             else if (args[0].equals("client")) {
-                if (args.length < 3)
+                if (args.length < 5)
                     new Sorter();
                 else {
                     try {
-                        int port = Integer.parseInt(args[2]);
-                        new Sorter(args[1], port);
+                        int serverPort = Integer.parseInt(args[2]);
+                        int dataPort = Integer.parseInt(args[4]);
+                        new Sorter(args[1], serverPort, args[3], dataPort);
                     }
                     catch (NumberFormatException e) {
-                        System.err.println("Arg 3 (" + args[2] + ") must be a" +
-                                " valid port number (integer).");
+                        System.err.println(e.getMessage());
                         System.exit(1);
                     }
+                }
+            }
+            else if (args[0].equals("data")) {
+                try {
+                    //Create remote object and stub
+                    DataProviderService data = new DataProviderServiceImpl();
+                    DataProviderService stub = (DataProviderService)
+                            UnicastRemoteObject.exportObject
+                                    (data, 0);
+
+                    //Create registry and bind stub
+                    Registry registry = LocateRegistry.createRegistry(1099);
+                    registry.rebind("DataProviderService", stub);
+                }
+                catch (RemoteException e) {
+                    System.err.println("Error (data): " + e.getMessage());
+                    e.printStackTrace();
                 }
             }
             else {

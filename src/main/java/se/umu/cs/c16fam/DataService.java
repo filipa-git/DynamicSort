@@ -9,7 +9,6 @@ import java.util.ArrayList;
  * @since: 2023-05-19.
  */
 public interface DataService extends Remote {
-    ArrayList<Integer> getData() throws RemoteException;
-
-    void processData() throws RemoteException;
+    int uploadData(int id, ArrayList<Integer> data, boolean done) throws
+            RemoteException;
 }
