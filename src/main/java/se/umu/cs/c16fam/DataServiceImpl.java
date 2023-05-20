@@ -165,6 +165,12 @@ public class DataServiceImpl implements DataService {
                                 //allow more data
                                 bufConds.get(i).signal();
                                 bufLocks.get(i).unlock();
+                                try {
+                                    Thread.sleep(1000);
+                                }
+                                catch (Exception e) {
+                                    e.printStackTrace();
+                                }
                                 bufLocks.get(i).lock();
                                 i--; //repeat this step in for-loop
                                 repeat = true;
