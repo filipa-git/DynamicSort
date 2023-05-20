@@ -44,6 +44,7 @@ public class Server {
                     while (!done) {
                         provider.uploadData(out.take());
                     }
+                    System.err.println("Thread done");
                 }
                 catch (Exception e) {
                     System.err.println("Error (thread): " + e.getMessage());
@@ -58,6 +59,7 @@ public class Server {
             ((DataServiceImpl)server).sortData();
             done = true;
             uThread.join();
+            System.err.println("Server done");
         }
         catch (Exception e) {
             System.err.println("Error (server): " + e.getMessage());
