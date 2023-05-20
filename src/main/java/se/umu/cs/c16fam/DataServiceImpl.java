@@ -82,7 +82,7 @@ public class DataServiceImpl implements DataService {
                 while (!buffers.get(n).isEmpty())
                     bufConds.get(n).await();
                 //Add data
-                    buffers.put(n, data);
+                buffers.put(n, data);
             }
             catch (Exception e) {
                 e.printStackTrace();
@@ -192,7 +192,6 @@ public class DataServiceImpl implements DataService {
         }
         finally {
             //Release all locks
-            sortLock.unlock();
             for (int i = 0; i < nBuf; i++) {
                 try {
                     bufLocks.get(i).unlock();
