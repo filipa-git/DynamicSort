@@ -12,7 +12,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class DataProviderServiceImpl implements DataProviderService {
     private Integer[] listA = new Integer[]{31,54,81,59,50,9,9,395,338,3};
     private Integer[] listB = new Integer[]{28,67,88,50,3,107,52,395,909,1};
-    private ConcurrentLinkedQueue<ArrayList<Integer>> q;
+    private ConcurrentLinkedQueue<ArrayList<Integer>> q = new ConcurrentLinkedQueue<>();
 
     public DataProviderServiceImpl() {
         q.add(new ArrayList<>(Arrays.asList(listA)));
