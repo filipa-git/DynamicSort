@@ -18,6 +18,7 @@ public class DataProviderServiceImpl implements DataProviderService {
     private Integer[] listB = new Integer[]{28,67,88,50,3,107,52,395,909,1};
     private ConcurrentLinkedQueue<ArrayList<Integer>> q = new ConcurrentLinkedQueue<>();
     private ArrayList<Integer> bigList = new ArrayList<>();
+    private ArrayList<Integer> resList = new ArrayList<>();
 
     public DataProviderServiceImpl() {
         Random rand = new Random();
@@ -41,6 +42,8 @@ public class DataProviderServiceImpl implements DataProviderService {
         }
         System.err.println("Got data, it was " + (sorted ? "" : "not") +
                 "sorted");
+        resList.addAll(data);
+        System.err.println("Total size: " + resList.size());
     }
 
     @Override

@@ -41,8 +41,9 @@ public class Server {
                             dataRegistry.lookup
                             ("DataProviderService");
 
-                    while (!done) {
+                    while (!done && !out.isEmpty()) {
                         provider.uploadData(out.take());
+                        System.err.println("Uploaded data");
                     }
                     System.err.println("Thread done");
                 }
