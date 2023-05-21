@@ -15,7 +15,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * @since: 2023-05-19.
  */
 public class DataServiceImpl implements DataService {
-    private final int CACHE_LIMIT = 8;
+    private final int CACHE_LIMIT = 100;
 
     private BlockingQueue<ArrayList<Integer>> outQueue;
     private ArrayList<Integer> outBuf = new ArrayList<>(CACHE_LIMIT);

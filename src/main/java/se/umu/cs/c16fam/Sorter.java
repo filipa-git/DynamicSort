@@ -11,7 +11,7 @@ import java.util.ArrayList;
  * @since: 2023-05-19.
  */
 public class Sorter {
-    private final int UPLOAD_LIMIT = 4;
+    private final int UPLOAD_LIMIT = 200;
     private Registry serverRegistry;
     private Registry dataRegistry;
 
