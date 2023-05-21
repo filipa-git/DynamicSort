@@ -237,7 +237,7 @@ public class DynSort {
      * @return the original list sorted
      */
     public static ArrayList<Integer> radixSort(ArrayList<Integer> list) {
-        if (list.size() < INS_LIMIT)
+        if (list.size() <= INS_LIMIT)
             insertionSort(list);
         else {
             //Get max
