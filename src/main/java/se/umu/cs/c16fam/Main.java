@@ -78,22 +78,22 @@ public class Main {
 
         ArrayList<Integer> list = new ArrayList<>(Arrays.asList(listC));
         System.out.println("List: " + list.toString());
-        dynSort.insertionSort(list);
+        DynSort.insertionSort(list);
         System.out.println("Insertion sort: " + list.toString());
 
         list = new ArrayList<>(Arrays.asList(listC));
         System.out.println("List: " + list.toString());
-        dynSort.quickSort(list);
+        DynSort.quickSort(list);
         System.out.println("Quicksort: " + list.toString());
 
         list = new ArrayList<>(Arrays.asList(listC));
         System.out.println("List: " + list.toString());
-        dynSort.radixSort(list);
+        DynSort.radixSort(list);
         System.out.println("Radix sort: " + list.toString());
 
         list = new ArrayList<>(Arrays.asList(listC));
         System.out.println("List: " + list.toString());
-        dynSort.mergeSort(list);
+        DynSort.mergeSort(list);
         System.out.println("Merge sort: " + list.toString());*/
     }
 }

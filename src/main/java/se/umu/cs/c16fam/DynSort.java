@@ -9,7 +9,7 @@ import java.util.LinkedList;
  * @author: filip
  * @since: 2023-05-07.
  */
-public class dynSort {
+public class DynSort {
     /**
      * Insertion sort
      * @param list the list to be sorted

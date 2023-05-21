@@ -57,6 +57,8 @@ public class Server {
             //Sort data
             System.err.println("Server ready");
             ((DataServiceImpl)server).sortData();
+
+            //stop thread
             done = true;
             uThread.join();
             System.err.println("Server done");

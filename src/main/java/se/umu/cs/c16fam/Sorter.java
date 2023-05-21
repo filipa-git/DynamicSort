@@ -54,6 +54,7 @@ public class Sorter {
             System.err.println("Got data " + data.toString());
 
             //Sort data
+            DynSort.quickSort(data);
 
             //send data to server
             int id = -1;
