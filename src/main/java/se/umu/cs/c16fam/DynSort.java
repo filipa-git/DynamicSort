@@ -13,6 +13,7 @@ public class DynSort {
     private static final int DEV_LIMIT = 1000000;
 
     public static ArrayList<Integer> dynamicSort(ArrayList<Integer> list) {
+        System.err.println("dSort");
         int size = list.size();
 
         if (size > CHOICE_SIZE){
@@ -49,6 +50,7 @@ public class DynSort {
 
     private static ArrayList<Integer> kMergeSort(ArrayList<Integer> list, int
             k) {
+        System.err.println("kSort");
         Queue<KNode> pq = new PriorityQueue<>();
 
         ArrayList<ArrayList<Integer>> parts = new ArrayList<>();
@@ -95,6 +97,7 @@ public class DynSort {
      * @return
      */
     private static void cQuickSort(ArrayList<Integer> list) {
+        System.err.println("qSort");
         int low = 0;
         int high = list.size()-1;
         int lowSum = 0;
@@ -171,6 +174,7 @@ public class DynSort {
      * @return the original list sorted
      */
     public static ArrayList<Integer> insertionSort(ArrayList<Integer> list) {
+        System.err.println("iSort");
         int n = list.size();
         int j;
         for (int i = 1; i < n; i++) {
@@ -237,6 +241,7 @@ public class DynSort {
      * @return the original list sorted
      */
     public static ArrayList<Integer> radixSort(ArrayList<Integer> list) {
+        System.err.println("rSort");
         if (list.size() <= INS_LIMIT)
             insertionSort(list);
         else {
