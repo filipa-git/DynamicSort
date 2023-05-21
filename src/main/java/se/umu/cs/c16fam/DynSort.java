@@ -1,15 +1,170 @@
 package se.umu.cs.c16fam;
 
 import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
+import java.util.*;
 
 /**
  * @author: filip
  * @since: 2023-05-07.
  */
 public class DynSort {
+    private static final int CHOICE_SIZE = 3000000;
+    private static final int INS_LIMIT = 10;
+    private static final int DEV_LIMIT = 1000000;
+
+    public static ArrayList<Integer> dynamicSort(ArrayList<Integer> list) {
+        int size = list.size();
+
+        if (size > CHOICE_SIZE){
+            int k = (int) Math.ceil(size/CHOICE_SIZE);
+            kMergeSort(list, k);
+        }
+        else {
+            cQuickSort(list);
+        }
+
+        return list;
+    }
+
+    /**
+     * Private class for nodes used in k-way merging
+     */
+    private static class KNode implements Comparable<KNode>{
+        int i;
+        int val;
+
+        KNode (int i, int val){
+            this.i = i;
+            this.val = val;
+        }
+
+        @Override
+        public int compareTo(KNode n) {
+            if (this.val <= n.val)
+                return -1;
+            else
+                return 1;
+        }
+    }
+
+    private static ArrayList<Integer> kMergeSort(ArrayList<Integer> list, int
+            k) {
+        Queue<KNode> pq = new PriorityQueue<>();
+
+        ArrayList<ArrayList<Integer>> parts = new ArrayList<>();
+
+        //partition
+        for (int i = 0; i < k; i++) {
+            ArrayList<Integer> p = new ArrayList<>();
+            for (int j = 0; j < CHOICE_SIZE; j++) {
+                if (list.isEmpty())
+                    break;
+                p.add(list.remove(0));
+            }
+            parts.add(p);
+        }
+
+        //sort partitions
+        for (ArrayList<Integer> part : parts) {
+            cQuickSort(part);
+        }
+
+        //merge using priority queue
+        for (int i = 0; i < k; i++) {
+            pq.add(new KNode(i, parts.get(i).remove(0)));
+        }
+
+        KNode curr;
+        ArrayList<Integer> p;
+        while (!pq.isEmpty()) {
+            curr = pq.poll();
+            list.add(curr.val);
+
+            p = parts.get(curr.i);
+            if (!p.isEmpty())
+                pq.add(new KNode(curr.i, p.remove(0)));
+        }
+
+        return list;
+    }
+
+    /**
+     * Dynamic quicksort that may choose to sort partitions using other
+     * algorithms
+     * @param list
+     * @return
+     */
+    private static void cQuickSort(ArrayList<Integer> list) {
+        int low = -1;
+        int high = list.size()-1;
+        int lowSum = 0;
+        int highSum = 0;
+        //Use insertion sort if list is appropriately small
+        if (high+1 <= INS_LIMIT)
+            insertionSort(list);
+        else {
+            int pivot = list.get(high);
+            int i = low-1;
+
+            for (int j = low; j <= high; j++) {
+                if (list.get(j) < pivot) {
+                    i++;
+                    lowSum+=list.get(j);
+                    Collections.swap(list, i, j);
+                }
+                else
+                    highSum+=list.get(j);
+            }
+
+            Collections.swap(list, i+1, high);
+
+            //Divide into new lists while calculating standard deviation
+            ArrayList<Integer> lowNums = new ArrayList<>();
+            if (i > -1) {
+                double lowMean = lowSum / (i + 1);
+                double lowDev = 0;
+                while (lowNums.size() < i + 1) {
+                    int v = list.remove(0);
+                    lowDev += Math.pow(v - lowMean, 2);
+                    lowNums.add(v);
+                }
+                lowDev = Math.sqrt(lowDev / (i + 1));
+
+                //Sort lownums
+                if (lowDev < DEV_LIMIT)
+                    cQuickSort(lowNums);
+                else
+                    radixSort(lowNums);
+            }
+
+            //Remove pivot
+            list.remove(0);
+
+            ArrayList<Integer> highNums = new ArrayList<>();
+            if (!list.isEmpty()) {
+                double highMean = highSum / (list.size());
+                double highDev = 0;
+                while (!list.isEmpty()) {
+                    int v = list.remove(0);
+                    highDev += Math.pow(v - highMean, 2);
+                    highNums.add(v);
+                }
+                highDev = Math.sqrt(highDev / (i + 1));
+
+                //sort highnums
+                if (highDev < DEV_LIMIT)
+                    cQuickSort(highNums);
+                else
+                    radixSort(highNums);
+            }
+
+            //Add all to same list
+            list.addAll(lowNums);
+            list.add(pivot);
+            list.addAll(highNums);
+        }
+    }
+
     /**
      * Insertion sort
      * @param list the list to be sorted
@@ -82,30 +237,34 @@ public class DynSort {
      * @return the original list sorted
      */
     public static ArrayList<Integer> radixSort(ArrayList<Integer> list) {
-        //Get max
-        Integer max = Collections.max(list);
-        //Get number of digits of max
-        int d = max.toString().length();
+        if (list.size() < INS_LIMIT)
+            insertionSort(list);
+        else {
+            //Get max
+            Integer max = Collections.max(list);
+            //Get number of digits of max
+            int d = max.toString().length();
 
-        //Make buckets
-        LinkedList<Integer>[] buckets = new LinkedList[10];
-        for (int i = 0; i < 10; i++)
-            buckets[i] = new LinkedList<>();
+            //Make buckets
+            LinkedList<Integer>[] buckets = new LinkedList[10];
+            for (int i = 0; i < 10; i++)
+                buckets[i] = new LinkedList<>();
 
-        for (int i = 0; i < d; i++) {
-            for (Integer e:
-                 list) {
-                int digit = (e / (int)Math.pow(10,i))%10;
-                buckets[digit].add(e);
-            }
-
-            int x = 0, y = 0;
-            while (x < 10) {
-                while (!buckets[x].isEmpty()) {
-                    list.set(y, buckets[x].remove());
-                    y++;
+            for (int i = 0; i < d; i++) {
+                for (Integer e :
+                        list) {
+                    int digit = (e / (int) Math.pow(10, i)) % 10;
+                    buckets[digit].add(e);
                 }
-                x++;
+
+                int x = 0, y = 0;
+                while (x < 10) {
+                    while (!buckets[x].isEmpty()) {
+                        list.set(y, buckets[x].remove());
+                        y++;
+                    }
+                    x++;
+                }
             }
         }
         return list;
