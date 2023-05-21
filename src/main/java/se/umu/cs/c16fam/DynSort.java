@@ -95,7 +95,7 @@ public class DynSort {
      * @return
      */
     private static void cQuickSort(ArrayList<Integer> list) {
-        int low = -1;
+        int low = 0;
         int high = list.size()-1;
         int lowSum = 0;
         int highSum = 0;
