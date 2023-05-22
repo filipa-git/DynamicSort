@@ -61,7 +61,13 @@ public class DataProviderServiceImpl implements DataProviderService {
                 }
 
                 sTime = System.currentTimeMillis();
-                q.addAll(tempList);
+                try {
+                    for (ArrayList<Integer> e : tempList)
+                        q.put(e);
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                }
                 break;
             default:
                 break;
