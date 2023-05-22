@@ -134,7 +134,10 @@ public class Main {
                     while (!done) {
                         cmd = inLine.nextLine();
                         switch (cmd){
-                            case "rand":
+                            case "done":
+                                done = true;
+                                break;
+                            default:
                                 //Start control thread
                                 cThread = new Thread(upload);
                                 cThread.start();
@@ -150,9 +153,6 @@ public class Main {
                                 System.err.println("End time: " + eTime);
                                 System.err.println("Time diff: " +
                                         (eTime-sTime));
-                                break;
-                            default:
-                                done = true;
                         }
                     }
                     System.err.println("Data provider done");
