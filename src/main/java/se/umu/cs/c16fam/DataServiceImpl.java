@@ -149,7 +149,6 @@ public class DataServiceImpl implements DataService {
             int bufId;
             int outCount = 0;
             boolean done = false;
-            boolean repeat = false;//failsafe if sorter crashes
 
             while (!done) {
                 min = -1;
@@ -163,20 +162,20 @@ public class DataServiceImpl implements DataService {
                         if (bufInds.get(i) >= b.size() || b.isEmpty()) {
                             System.err.println(i);
                             //remove if done or repeated
-                            if (doneSet.contains(i) || repeat) {
-                                System.err.println("Removing " + i + " " +
-                                        repeat);
+                            if (doneSet.contains(i)) {
+                                System.err.println("Removing " + i);
                                 buffers.remove(i);
                                 //check if all is done
                                 if (buffers.isEmpty())
                                     done = true;
-                                repeat = false;
                             }
                             else {
                                 //allow more data
                                 buffers.put(i,new ArrayList<>());
                                 bufConds.get(i).signal();
+                                bufLocks.get(i).unlock();
                                 //Wait for more data
+                                bufLocks.get(i).lock();
                                 try {
                                     while (buffers.get(i).isEmpty())
                                         bufConds.get(i).await();
@@ -186,13 +185,11 @@ public class DataServiceImpl implements DataService {
                                 }
                                 bufInds.set(i, 0);
                                 i--; //repeat this step in for-loop
-                                repeat = true;
                             }
                         }
                         else if (b.get(bufInds.get(i)) < min || min == -1) {
                             min = b.get(bufInds.get(i));
                             bufId = i;
-                            repeat = false;
                         }
                     }
                 }

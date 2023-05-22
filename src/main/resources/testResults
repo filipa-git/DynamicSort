@@ -71,4 +71,6 @@
 #standard deviation, time(millis), med quick,  med radix, med insertion
 #DynSort, Gaussian, 15999999 keys, 3 sorters
 
-#DynSort, Gaussian, 15999999 keys, 3 sorters
+#nkeys, time(millis)
+#DynSort, Random, 3 sorters
+15999999, 32961
