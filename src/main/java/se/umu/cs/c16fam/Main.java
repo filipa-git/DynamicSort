@@ -53,12 +53,12 @@ public class Main {
                         int uLimit = cache/(nSorters+1);
                         int serverPort = Integer.parseInt(args[4]);
                         int dataPort = Integer.parseInt(args[6]);
-                        String limit;
+                        String limit = "dynamic";
                         if (args.length >= 8)
                             limit = args[7];
 
                         new Sorter(uLimit, args[3], serverPort, args[5],
-                                dataPort);
+                                dataPort, limit);
                     }
                     catch (NumberFormatException e) {
                         System.err.println(e.getMessage());
