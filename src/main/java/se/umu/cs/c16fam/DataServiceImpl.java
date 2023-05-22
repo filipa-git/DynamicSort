@@ -190,7 +190,8 @@ public class DataServiceImpl implements DataService {
                 }
                 //Send data if cache limit reached or done
                 if (outCount == CACHE_LIMIT || done) {
-                    outQueue.add(outBuf);
+                    if (!outBuf.isEmpty())
+                        outQueue.add(outBuf);
                     outBuf = new ArrayList<>(CACHE_LIMIT);
                     outCount = 0;
                 }

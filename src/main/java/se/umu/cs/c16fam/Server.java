@@ -41,9 +41,13 @@ public class Server {
                             dataRegistry.lookup
                             ("DataProviderService");
 
+                    ArrayList<Integer> data = new ArrayList<>();
                     while (!done || !out.isEmpty()) {
-                        provider.uploadData(out.take());
-                        System.err.println("Uploaded data");
+                        data = out.take();
+                        if (!data.isEmpty()) {
+                            provider.uploadData(out.take());
+                            System.err.println("Uploaded data");
+                        }
                     }
                     System.err.println("Thread done");
                 }
