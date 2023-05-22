@@ -23,7 +23,6 @@ public class DataProviderServiceImpl implements DataProviderService {
     private Integer[] listB = new Integer[]{28,67,88,50,3,107,52,395,909,1};
     private BlockingQueue<ArrayList<Integer>> q = new LinkedBlockingQueue<>();
     private BlockingQueue<ArrayList<Integer>> resQ;
-    private LinkedList<ArrayList<Integer>> tempList;
     private int testSize, currSize;
     private ReentrantLock sizeLock = new ReentrantLock();
     private long endTime;
@@ -37,7 +36,7 @@ public class DataProviderServiceImpl implements DataProviderService {
 
     public long initData(String cmd) {
         long sTime = 0;
-        tempList = new LinkedList<>();
+        LinkedList<ArrayList<Integer>> tempList = new LinkedList<>();
         switch (cmd){
             case "rand":
                 Random rand = new Random();
@@ -62,8 +61,10 @@ public class DataProviderServiceImpl implements DataProviderService {
 
                 sTime = System.currentTimeMillis();
                 try {
-                    for (ArrayList<Integer> e : tempList)
+                    for (ArrayList<Integer> e : tempList) {
+                        System.err.println("Adding data " + e.size());
                         q.put(e);
+                    }
                 }
                 catch (Exception e) {
                     e.printStackTrace();

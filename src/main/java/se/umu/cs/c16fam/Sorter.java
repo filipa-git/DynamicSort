@@ -16,6 +16,7 @@ public class Sorter {
     private Registry dataRegistry;
 
     public Sorter() {
+        System.err.println("Making local client");
         try {
             serverRegistry = LocateRegistry.getRegistry();
             dataRegistry = serverRegistry;
@@ -31,6 +32,8 @@ public class Sorter {
     public Sorter(int uLimit, String serverHost, int serverPort, String
             dataHost, int
             dataPort) {
+        System.err.println("making client: " + uLimit + " " + serverHost + " " +
+                "" + serverPort + " " + dataHost + " " + dataPort);
         try {
             serverRegistry = LocateRegistry.getRegistry(serverHost, serverPort);
             dataRegistry = LocateRegistry.getRegistry(dataHost, dataPort);
@@ -52,6 +55,7 @@ public class Sorter {
             DataService server = (DataService) serverRegistry.lookup("DataService");
             DataProviderService dataProvider = (DataProviderService)
                     dataRegistry.lookup("DataProviderService");
+            System.err.println("Retrieving data...");
             ArrayList<Integer> data = dataProvider.getData();
             if (data.isEmpty()) {
                 System.err.println("Got empty data");
