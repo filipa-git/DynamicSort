@@ -135,7 +135,7 @@ public class DynSort {
                 Integer v = list.get(j);
                 if (v < pivot) {
                     if (lowUsed < N_DEV_LIMIT) {
-                        lowSum += list.get(j);
+                        lowSum += v;
                         lowUsed++;
                     }
                     lowNums.add(v);
@@ -143,7 +143,7 @@ public class DynSort {
                 else {
                     highNums.add(v);
                     if (highUsed < N_DEV_LIMIT) {
-                        highSum += list.get(j);
+                        highSum += v;
                         highUsed++;
                     }
                 }
