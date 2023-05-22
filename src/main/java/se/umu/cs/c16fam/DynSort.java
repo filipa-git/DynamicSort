@@ -18,7 +18,7 @@ public class DynSort {
         int size = list.size();
 
         if (size > CHOICE_SIZE){
-            int k = (int) Math.ceil(size/CHOICE_SIZE);
+            int k = size / CHOICE_SIZE + ((size % CHOICE_SIZE == 0) ? 0 : 1);
             System.err.println("k: " + k);
             kMergeSort(list, k);
         }
