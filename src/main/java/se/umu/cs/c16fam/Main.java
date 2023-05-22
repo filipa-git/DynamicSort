@@ -82,6 +82,7 @@ public class Main {
                                             res) {
                                         if (prev > i)
                                             sorted = false;
+                                        prev = i;
                                         tSize++;
                                     }
                                 }

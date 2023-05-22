@@ -16,7 +16,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * @since: 2023-05-20.
  */
 public class DataProviderServiceImpl implements DataProviderService {
-    private final int LIST_SIZE = 5000;
+    private final int LIST_SIZE = 1000;
     private final int MAX_VAL = 16000000;
     private final int N_CHUNKS = 1;
     private Integer[] listA = new Integer[]{31,54,81,59,50,9,9,395,338,3};
@@ -74,6 +74,7 @@ public class DataProviderServiceImpl implements DataProviderService {
             //update total size
             currSize += data.size();
             //send data to control
+            System.err.println("Got data of size " + data.size());
             resQ.add(data);
             //check if test done
             if (currSize >= testSize) {
