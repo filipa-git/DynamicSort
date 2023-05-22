@@ -133,6 +133,116 @@ public class DataProviderServiceImpl implements DataProviderService {
                     tempList.add(l);
                 }
                 break;
+            case "rand":
+                System.err.println(n_chunks);
+                for (int j = 0; j < n_chunks; j++) {
+                    ArrayList<Integer> l = new ArrayList<>();
+                    System.err.println(list_size);
+                    for (int i = 0; i < list_size; i++) {
+                        Integer r = rand.nextInt(MAX_VAL);
+                        l.add(r);
+                    }
+                    tempList.add(l);
+                }
+                break;
+            case "gaus3":
+                System.err.println(n_chunks);
+                for (int j = 0; j < n_chunks; j++) {
+                    ArrayList<Integer> l = new ArrayList<>();
+                    System.err.println(list_size);
+                    for (int i = 0; i < list_size; i++) {
+                        Integer r;
+                        do {
+                            r = (int) (rand.nextGaussian() * 1000 + 8000000);
+                        } while (r < 0);
+                        l.add(r);
+                    }
+                    tempList.add(l);
+                }
+                break;
+            case "gaus4":
+                System.err.println(n_chunks);
+                for (int j = 0; j < n_chunks; j++) {
+                    ArrayList<Integer> l = new ArrayList<>();
+                    System.err.println(list_size);
+                    for (int i = 0; i < list_size; i++) {
+                        Integer r;
+                        do {
+                            r = (int) (rand.nextGaussian() * 10000 + 8000000);
+                        } while (r < 0);
+                        l.add(r);
+                    }
+                    tempList.add(l);
+                }
+                break;
+            case "gaus5":
+                System.err.println(n_chunks);
+                for (int j = 0; j < n_chunks; j++) {
+                    ArrayList<Integer> l = new ArrayList<>();
+                    System.err.println(list_size);
+                    for (int i = 0; i < list_size; i++) {
+                        Integer r;
+                        do {
+                            r = (int) (rand.nextGaussian() * 100000 + 8000000);
+                        } while (r < 0);
+                        l.add(r);
+                    }
+                    tempList.add(l);
+                }
+                break;
+            case "gaus6":
+                System.err.println(n_chunks);
+                for (int j = 0; j < n_chunks; j++) {
+                    ArrayList<Integer> l = new ArrayList<>();
+                    System.err.println(list_size);
+                    for (int i = 0; i < list_size; i++) {
+                        Integer r;
+                        do {
+                            r = (int) (rand.nextGaussian() * 1000000 + 8000000);
+                        } while (r < 0);
+                        l.add(r);
+                    }
+                    tempList.add(l);
+                }
+                break;
+            case "gaus7":
+                System.err.println(n_chunks);
+                for (int j = 0; j < n_chunks; j++) {
+                    ArrayList<Integer> l = new ArrayList<>();
+                    System.err.println(list_size);
+                    for (int i = 0; i < list_size; i++) {
+                        Integer r;
+                        do {
+                            r = (int) (rand.nextGaussian() * 10000000 +
+                                    30000000);
+                        } while (r < 0);
+                        l.add(r);
+                    }
+                    tempList.add(l);
+                }
+                break;
+            case "sorted":
+                System.err.println(n_chunks);
+                for (int j = 0; j < n_chunks; j++) {
+                    ArrayList<Integer> l = new ArrayList<>();
+                    System.err.println(list_size);
+                    for (int i = 0; i < list_size; i++) {
+                        l.add(i+(list_size*j));
+                    }
+                    tempList.add(l);
+                }
+                break;
+            case "rsorted":
+                System.err.println(n_chunks);
+                for (int j = n_chunks-1; j >= 0; j--) {
+                    ArrayList<Integer> l = new ArrayList<>();
+                    System.err.println(list_size);
+                    for (int i = list_size-1; i >= 0; i--) {
+                        l.add(i+(list_size*j));
+                    }
+                    tempList.add(l);
+                }
+                break;
 
             default:
                 return 0;

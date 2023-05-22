@@ -28,8 +28,16 @@
 1, 8000000, 23555, 1, 0, 1, 0
 1, 16000000, 50339, 1, 0, 1, 0
 
-#standard deviation, time(millis), partitions, quick, radix, insertion
-#DynSort, Gaussian (seed=42), 2000000 keys, 4 sorters
-1000, 2545, 1, 4, 8, 0
-10000, 2634, 1, 4, 8, 0
-100000, 2662
+#standard deviation, time(millis), partitions, avg quick,  avg radix, avg insertion
+#DynSort, Gaussian, 2000000 keys, 4 sorters
+1000, 39846, 1, 445345.75, 0, 5815.5
+10000, 19591, 1, 176817.75, 0, 38716
+100000, 13041, 1, 83648.75, 0, 74692
+1000000, , 1, , ,
+
+#standard deviation, time(millis), med quick,  med radix, med insertion
+#DynSort, Gaussian, 2000000 keys, 3 sorters
+1000, 39846, 445345.75, 0, 5815.5
+10000, 19591, 176817.75, 0, 38716
+100000, 13041, 83648.75, 0, 74692
+1000000, , 1, , ,
