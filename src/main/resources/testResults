@@ -1,10 +1,13 @@
-#nsorters, nkeys, time(millis), quick, radix, insertion
-#Random numbers (seeded), full dev calculation:
-1, 500000, 12027, 1, 2, 0
-1, 1000000, 49203, 1, 2, 0
-1, 2000000, 222408, 1, 2, 0
+#nsorters, nkeys, time(millis), partitions, quick, radix, insertion
+#Random numbers (seed = 42), full dev calculation:
+1, 500000, 12027, 1, 1, 2, 0
+1, 1000000, 49203, 1, 1, 2, 0
+1, 2000000, 222408, 1, 1, 2, 0
 
-#Random numbers (seeded), partial dev calculation (limit = 1000)
-1, 500000, 2224, 1, 2, 0
-1, 1000000, 3179, 1, 2, 0
-1, 2000000, 5071, 1, 2, 0
+#Random numbers (seed = 42), partial dev calculation (limit = 1000)
+1, 500000, 2224, 1, 1, 2, 0
+1, 1000000, 3179, 1, 1, 2, 0
+1, 2000000, 5071, 1, 1, 2, 0
+1, 4000000, 10902, 2, 2, 4, 0
+1, 8000000, 24028, 3, 3, 6, 0
+1, 16000000, 50544,

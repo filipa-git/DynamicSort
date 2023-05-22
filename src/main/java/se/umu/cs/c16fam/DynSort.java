@@ -12,19 +12,27 @@ public class DynSort {
     private static final int INS_LIMIT = 10;
     private static final int DEV_LIMIT = 1000000;
     private static final int N_DEV_LIMIT = 1000;
+    private int nIns = 0;
+    private int nQuick = 0;
+    private int nRadix = 0;
+    private int nParts = 0;
 
-    public static ArrayList<Integer> dynamicSort(ArrayList<Integer> list) {
+    public ArrayList<Integer> dynamicSort(ArrayList<Integer> list) {
         System.err.println("dSort");
         int size = list.size();
 
         if (size > CHOICE_SIZE){
             int k = size / CHOICE_SIZE + ((size % CHOICE_SIZE == 0) ? 0 : 1);
             System.err.println("k: " + k);
+            nParts = k;
             kMergeSort(list, k);
         }
         else {
             cQuickSort(list);
         }
+
+        System.err.println("nParts: " + nParts + "; nIns: " + nIns + "; " +
+                "nQuick: " + nQuick + "; nRadix: " + nRadix);
 
         return list;
     }
@@ -52,7 +60,7 @@ public class DynSort {
         }
     }
 
-    private static ArrayList<Integer> kMergeSort(ArrayList<Integer> list, int
+    private ArrayList<Integer> kMergeSort(ArrayList<Integer> list, int
             k) {
         System.err.println("kSort");
         Queue<KNode> pq = new PriorityQueue<>();
@@ -105,8 +113,7 @@ public class DynSort {
      * @param list
      * @return
      */
-    private static void cQuickSort(ArrayList<Integer> list) {
-        System.err.println("qSort");
+    private void cQuickSort(ArrayList<Integer> list) {
         int low = 0;
         int high = list.size()-1;
         int lowSum = 0;
@@ -117,6 +124,8 @@ public class DynSort {
         if (high+1 <= INS_LIMIT)
             insertionSort(list);
         else {
+            System.err.println("qSort");
+            nQuick++;
             int pivot = list.get(high);
             ArrayList<Integer> lowNums = new ArrayList<>();
             ArrayList<Integer> highNums = new ArrayList<>();
@@ -190,8 +199,9 @@ public class DynSort {
      * @param list the list to be sorted
      * @return the original list sorted
      */
-    public static ArrayList<Integer> insertionSort(ArrayList<Integer> list) {
+    public ArrayList<Integer> insertionSort(ArrayList<Integer> list) {
         System.err.println("iSort");
+        nIns++;
         int n = list.size();
         int j;
         for (int i = 1; i < n; i++) {
@@ -257,11 +267,12 @@ public class DynSort {
      * @param list the list to sort
      * @return the original list sorted
      */
-    public static ArrayList<Integer> radixSort(ArrayList<Integer> list) {
-        System.err.println("rSort");
+    public ArrayList<Integer> radixSort(ArrayList<Integer> list) {
         if (list.size() <= INS_LIMIT)
             insertionSort(list);
         else {
+            System.err.println("rSort");
+            nRadix++;
             //Get max
             Integer max = Collections.max(list);
             //Get number of digits of max

@@ -64,7 +64,7 @@ public class Sorter {
             System.err.println("Got data");
 
             //Sort data
-            DynSort.dynamicSort(data);
+            new DynSort().dynamicSort(data);
 
             //send data to server
             int id = -1;
