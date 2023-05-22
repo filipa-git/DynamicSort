@@ -63,8 +63,8 @@ public class DynSort {
         for (int i = 0; i < k; i++) {
             ArrayList<Integer> p = new ArrayList<>();
             for (int j = CHOICE_SIZE*i; j < CHOICE_SIZE*(i+1); j++) {
-                if (j >= list.size())
-                    break;
+                if (j >= list.size()) //set j to max to break for loop early
+                    j = CHOICE_SIZE*(i+1);
                 else
                     p.add(list.get(j));
             }
