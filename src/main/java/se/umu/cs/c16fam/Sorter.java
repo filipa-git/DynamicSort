@@ -14,6 +14,7 @@ public class Sorter {
     private int upload_limit = 16000000;
     private Registry serverRegistry;
     private Registry dataRegistry;
+    private int limitSort = 0;
 
     public Sorter() {
         System.err.println("Making local client");
@@ -30,14 +31,21 @@ public class Sorter {
     }
 
     public Sorter(int uLimit, String serverHost, int serverPort, String
-            dataHost, int
-            dataPort) {
+            dataHost, int dataPort, String limit) {
         System.err.println("making client: " + uLimit + " " + serverHost + " " +
                 "" + serverPort + " " + dataHost + " " + dataPort);
         try {
             serverRegistry = LocateRegistry.getRegistry(serverHost, serverPort);
             dataRegistry = LocateRegistry.getRegistry(dataHost, dataPort);
             upload_limit = uLimit;
+            switch (limit) {
+                case "quick":
+                    limitSort = 1;
+                    break;
+                case "radix":
+                    limitSort = 2;
+                    break;
+            }
             execute();
         }
         catch (RemoteException e) {
@@ -55,6 +63,7 @@ public class Sorter {
             DataService server = (DataService) serverRegistry.lookup("DataService");
             DataProviderService dataProvider = (DataProviderService)
                     dataRegistry.lookup("DataProviderService");
+            //Get data
             System.err.println("Retrieving data...");
             ArrayList<Integer> data = dataProvider.getData();
             if (data.isEmpty()) {
@@ -64,7 +73,20 @@ public class Sorter {
             System.err.println("Got data");
 
             //Sort data
-            new DynSort().dynamicSort(data);
+            DynSort dSort = new DynSort();
+            switch (limitSort) {
+                case 1:
+                    System.err.println("Using quick sort");
+                    DynSort.quickSort(data);
+                    break;
+                case 2:
+                    System.err.println("Using radix sort");
+                    dSort.radixSort(data);
+                    break;
+                default:
+                    System.err.println("Using dynamic sort");
+                    dSort.dynamicSort(data);
+            }
 
             //send data to server
             int id = -1;
