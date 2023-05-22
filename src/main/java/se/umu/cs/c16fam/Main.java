@@ -135,6 +135,7 @@ public class Main {
                                 done = true;
                         }
                     }
+                    System.err.println("Data provider done");
                 }
                 catch (Exception e) {
                     System.err.println("Error (data): " + e.getMessage());
