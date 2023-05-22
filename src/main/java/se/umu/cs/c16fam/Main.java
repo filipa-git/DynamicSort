@@ -82,8 +82,8 @@ public class Main {
                     System.exit(1);
                 }
                 try {
-                    int cacheSize = Integer.parseInt(args[1]);
-                    int nSorters = Integer.parseInt(args[2]);
+                    int nSorters = Integer.parseInt(args[1]);
+                    int cacheSize = Integer.parseInt(args[2]);
 
                     BlockingQueue<ArrayList<Integer>> resQ = new
                             LinkedBlockingQueue<>();

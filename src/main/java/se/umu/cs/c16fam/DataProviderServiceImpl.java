@@ -41,8 +41,10 @@ public class DataProviderServiceImpl implements DataProviderService {
             case "rand":
                 Random rand = new Random();
                 rand.setSeed(42);
+                System.err.println(n_chunks);
                 for (int j = 0; j < n_chunks; j++) {
                     ArrayList<Integer> l = new ArrayList<>();
+                    System.err.println(list_size);
                     for (int i = 0; i < list_size; i++) {
                         Integer r = rand.nextInt(MAX_VAL);
                         l.add(r);
