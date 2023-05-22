@@ -162,6 +162,8 @@ public class DataServiceImpl implements DataService {
                         if (bufInds.get(i) >= b.size() || b.isEmpty()) {
                             //remove if done or repeated
                             if (doneSet.contains(i) || repeat) {
+                                System.err.println("Removing " + i + " " +
+                                        repeat);
                                 buffers.remove(i);
                                 //check if all is done
                                 if (buffers.isEmpty())
