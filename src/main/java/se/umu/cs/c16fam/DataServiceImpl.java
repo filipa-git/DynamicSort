@@ -15,10 +15,10 @@ import java.util.concurrent.locks.ReentrantLock;
  * @since: 2023-05-19.
  */
 public class DataServiceImpl implements DataService {
-    private final int CACHE_LIMIT = 16000000;
+    private int cache_limit = 16000000;
 
     private BlockingQueue<ArrayList<Integer>> outQueue;
-    private ArrayList<Integer> outBuf = new ArrayList<>(CACHE_LIMIT);
+    private ArrayList<Integer> outBuf = new ArrayList<>();
     private ReentrantLock countLock = new ReentrantLock();
     private int expectedSorters = 0;
     private ReentrantLock sortLock = new ReentrantLock();
@@ -33,9 +33,10 @@ public class DataServiceImpl implements DataService {
     private Set<Integer> doneSet = ConcurrentHashMap.newKeySet();
 
     public DataServiceImpl(BlockingQueue<ArrayList<Integer>> out, int
-     nSorters) {
+     nSorters, int cache) {
         outQueue = out;
         expectedSorters = nSorters;
+        cache_limit = cache/(nSorters+1);
     }
 
     @Override
@@ -202,7 +203,7 @@ public class DataServiceImpl implements DataService {
                     outCount++;
                 }
                 //Send data if cache limit reached or done
-                if (outCount == CACHE_LIMIT || done) {
+                if (outCount >= cache_limit || done) {
                     System.err.println("Sending data");
                     if (!outBuf.isEmpty())
                         outQueue.add(outBuf);

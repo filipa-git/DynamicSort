@@ -21,10 +21,11 @@ public class Server {
     private BlockingQueue<ArrayList<Integer>> out = new
             LinkedBlockingQueue<>();
 
-    public Server(int expected, String dataProviderName, int dataProviderPort) {
+    public Server(int expected, int cache, String dataProviderName, int
+            dataProviderPort) {
         try {
             //Create remote object and stub
-            DataService server = new DataServiceImpl(out, expected);
+            DataService server = new DataServiceImpl(out, expected, cache);
             DataService stub = (DataService) UnicastRemoteObject.exportObject
                     (server, 0);
 

@@ -11,7 +11,7 @@ import java.util.ArrayList;
  * @since: 2023-05-19.
  */
 public class Sorter {
-    private final int UPLOAD_LIMIT = 16000000;
+    private int upload_limit = 16000000;
     private Registry serverRegistry;
     private Registry dataRegistry;
 
@@ -28,11 +28,13 @@ public class Sorter {
         }
     }
 
-    public Sorter(String serverHost, int serverPort, String dataHost, int
+    public Sorter(int uLimit, String serverHost, int serverPort, String
+            dataHost, int
             dataPort) {
         try {
             serverRegistry = LocateRegistry.getRegistry(serverHost, serverPort);
             dataRegistry = LocateRegistry.getRegistry(dataHost, dataPort);
+            upload_limit = uLimit;
             execute();
         }
         catch (RemoteException e) {
@@ -63,16 +65,20 @@ public class Sorter {
             //send data to server
             int id = -1;
             boolean done = false;
+            int currInd = 0;
+            int nLoops = 1;
             while (!done) {
                 ArrayList<Integer> partList = new ArrayList<>();
-                if (data.size() > UPLOAD_LIMIT) {
-                    for (int i = UPLOAD_LIMIT-1; i >= 0; i--) {
-                        partList.add(0,data.remove(i));
+                if (data.size() - currInd > upload_limit) {
+                    for (int i = currInd; i < upload_limit*nLoops; i++) {
+                        partList.add(0,data.get(i));
+                        currInd++;
                     }
                 }
                 else {
-                    for (int i = data.size()-1; i >= 0; i--) {
+                    for (int i = currInd; i < data.size(); i++) {
                         partList.add(0,data.remove(i));
+                        currInd++;
                     }
                     done = true;
                 }
@@ -80,6 +86,7 @@ public class Sorter {
                     id = server.uploadData(-1,partList,done);
                 else
                     server.uploadData(id,partList,done);
+                nLoops++;
             }
         }
         catch (Exception e) {

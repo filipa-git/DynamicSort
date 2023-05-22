@@ -19,11 +19,12 @@ public class Main {
         if (args.length > 0) {
             //Create server if first arg is "server"
             if (args[0].equals("server")) {
-                if (args.length == 4) {
+                if (args.length == 5) {
                     try {
                         int expected = Integer.parseInt(args[1]);
-                        int dataPort = Integer.parseInt(args[3]);
-                        new Server(expected, args[2], dataPort);
+                        int cache = Integer.parseInt(args[2]);
+                        int dataPort = Integer.parseInt(args[4]);
+                        new Server(expected, cache, args[3], dataPort);
                     }
                     catch (NumberFormatException e) {
                         System.err.println(e.getMessage());
@@ -31,36 +32,65 @@ public class Main {
                     }
                 }
                 else {
-                    System.err.println("Usage: DynSort {server " +
-                            "<expected> <dataHost> <dataPort>}|{client " +
-                            "[<serverHost> <serverPort> <dataHost> " +
-                            "<dataPort>]}|data");
+                    System.err.println("Valid arguments: {server " +
+                            "<nSorters> <cacheLimit> <dataHost> " +
+                            "<dataPort>}|{client " +
+                            "[<nSorters> <cacheLimit> <serverHost> " +
+                            "<serverPort> <dataHost> " +
+                            "<dataPort>]}|{data <cacheLimit> " +
+                            "<numberOfSorters>}");
                 }
             }
             //Create client if first arg is "client"
             else if (args[0].equals("client")) {
-                if (args.length < 5)
+                if (args.length == 1)
                     new Sorter();
-                else {
+                else if (args.length == 7) {
                     try {
-                        int serverPort = Integer.parseInt(args[2]);
-                        int dataPort = Integer.parseInt(args[4]);
-                        new Sorter(args[1], serverPort, args[3], dataPort);
+                        int nSorters = Integer.parseInt(args[1]);
+                        int cache = Integer.parseInt(args[2]);
+                        int uLimit = cache/(nSorters+1);
+                        int serverPort = Integer.parseInt(args[4]);
+                        int dataPort = Integer.parseInt(args[6]);
+                        new Sorter(uLimit, args[1], serverPort, args[3],
+                                dataPort);
                     }
                     catch (NumberFormatException e) {
                         System.err.println(e.getMessage());
                         System.exit(1);
                     }
                 }
+                else {
+                    System.err.println("Valid arguments: {server " +
+                            "<nSorters> <cacheLimit> <dataHost> " +
+                            "<dataPort>}|{client " +
+                            "[<nSorters> <cacheLimit> <serverHost> " +
+                            "<serverPort> <dataHost> " +
+                            "<dataPort>]}|{data <cacheLimit> " +
+                            "<numberOfSorters>}");
+                }
             }
             else if (args[0].equals("data")) {
+                if (args.length < 3) {
+                    System.err.println("Valid arguments: {server " +
+                            "<nSorters> <cacheLimit> <dataHost> " +
+                            "<dataPort>}|{client " +
+                            "[<nSorters> <cacheLimit> <serverHost> " +
+                            "<serverPort> <dataHost> " +
+                            "<dataPort>]}|{data <cacheLimit> " +
+                            "<numberOfSorters>}");
+                    System.exit(1);
+                }
                 try {
+                    int cacheSize = Integer.parseInt(args[1]);
+                    int nSorters = Integer.parseInt(args[2]);
+
                     BlockingQueue<ArrayList<Integer>> resQ = new
                             LinkedBlockingQueue<>();
 
                     //Create remote object and stub
                     DataProviderService data = new DataProviderServiceImpl
-                            (resQ);
+                            (resQ, cacheSize, nSorters);
                     DataProviderService stub = (DataProviderService)
                             UnicastRemoteObject.exportObject
                                     (data, 0);
@@ -133,6 +163,10 @@ public class Main {
                         }
                     }
                     System.err.println("Data provider done");
+                }
+                catch (NumberFormatException e) {
+                    System.err.println(e.getMessage());
+                    System.exit(1);
                 }
                 catch (Exception e) {
                     System.err.println("Error (data): " + e.getMessage());
