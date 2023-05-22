@@ -74,12 +74,14 @@ public class Sorter {
             while (!done) {
                 ArrayList<Integer> partList = new ArrayList<>();
                 if (data.size() - currInd > upload_limit) {
+                    System.err.println("Sending limit");
                     for (int i = currInd; i < upload_limit*nLoops; i++) {
                         partList.add(data.get(i));
                         currInd++;
                     }
                 }
                 else {
+                    System.err.println("Sending final");
                     for (int i = currInd; i < data.size(); i++) {
                         partList.add(data.get(i));
                         currInd++;
