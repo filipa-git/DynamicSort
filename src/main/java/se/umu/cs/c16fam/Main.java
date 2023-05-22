@@ -52,7 +52,7 @@ public class Main {
                         int uLimit = cache/(nSorters+1);
                         int serverPort = Integer.parseInt(args[4]);
                         int dataPort = Integer.parseInt(args[6]);
-                        new Sorter(uLimit, args[1], serverPort, args[3],
+                        new Sorter(uLimit, args[3], serverPort, args[5],
                                 dataPort);
                     }
                     catch (NumberFormatException e) {
