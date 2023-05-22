@@ -182,9 +182,9 @@ public class DataServiceImpl implements DataService {
                                     e.printStackTrace();
                                 }
                                 bufLocks.get(i).lock();
+                                bufInds.set(i, 0);
                                 i--; //repeat this step in for-loop
                                 repeat = true;
-                                bufInds.set(i, 0);
                             }
                         }
                         else if (b.get(bufInds.get(i)) < min || min == -1) {
