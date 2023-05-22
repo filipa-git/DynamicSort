@@ -4,7 +4,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -18,7 +18,7 @@ import java.util.concurrent.locks.ReentrantLock;
 public class Server {
     private boolean done = false;
     private ReentrantLock doneLock = new ReentrantLock();
-    private BlockingQueue<ArrayList<Integer>> out = new
+    private BlockingQueue<LinkedList<Integer>> out = new
             LinkedBlockingQueue<>();
 
     public Server(int expected, String dataProviderName, int dataProviderPort) {
@@ -41,7 +41,7 @@ public class Server {
                             dataRegistry.lookup
                             ("DataProviderService");
 
-                    ArrayList<Integer> data;
+                    LinkedList<Integer> data;
                     while (!done || !out.isEmpty()) {
                         data = out.take();
                         if (!data.isEmpty()) {

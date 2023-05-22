@@ -4,7 +4,7 @@ import java.lang.reflect.Array;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.util.ArrayList;
+import java.util.LinkedList;
 
 /**
  * @author: filip
@@ -50,7 +50,7 @@ public class Sorter {
             DataService server = (DataService) serverRegistry.lookup("DataService");
             DataProviderService dataProvider = (DataProviderService)
                     dataRegistry.lookup("DataProviderService");
-            ArrayList<Integer> data = dataProvider.getData();
+            LinkedList<Integer> data = dataProvider.getData();
             if (data.isEmpty()) {
                 System.err.println("Got empty data");
                 System.exit(1);
@@ -64,15 +64,15 @@ public class Sorter {
             int id = -1;
             boolean done = false;
             while (!done) {
-                ArrayList<Integer> partList = new ArrayList<>();
+                LinkedList<Integer> partList = new LinkedList<>();
                 if (data.size() > UPLOAD_LIMIT) {
-                    for (int i = UPLOAD_LIMIT-1; i >= 0; i--) {
-                        partList.add(0,data.remove(i));
+                    for (int i = 0; i < UPLOAD_LIMIT; i++) {
+                        partList.add(data.poll());
                     }
                 }
                 else {
-                    for (int i = data.size()-1; i >= 0; i--) {
-                        partList.add(0,data.remove(i));
+                    for (int i = 0; i < data.size(); i++) {
+                        partList.add(data.poll());
                     }
                     done = true;
                 }

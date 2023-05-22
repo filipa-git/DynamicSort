@@ -3,6 +3,7 @@ package se.umu.cs.c16fam;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
@@ -17,14 +18,14 @@ import java.util.concurrent.locks.ReentrantLock;
 public class DataServiceImpl implements DataService {
     private final int CACHE_LIMIT = 16000000;
 
-    private BlockingQueue<ArrayList<Integer>> outQueue;
-    private ArrayList<Integer> outBuf = new ArrayList<>(CACHE_LIMIT);
+    private BlockingQueue<LinkedList<Integer>> outQueue;
+    private LinkedList<Integer> outBuf = new LinkedList<>();
     private ReentrantLock countLock = new ReentrantLock();
     private int expectedSorters = 0;
     private ReentrantLock sortLock = new ReentrantLock();
     private Condition sortCond = sortLock.newCondition();
     private int bufCount = 0;
-    private ConcurrentHashMap<Integer, ArrayList<Integer>> buffers = new
+    private ConcurrentHashMap<Integer, LinkedList<Integer>> buffers = new
             ConcurrentHashMap<>();
     private ConcurrentHashMap<Integer, ReentrantLock> bufLocks = new
             ConcurrentHashMap<>();
@@ -32,14 +33,14 @@ public class DataServiceImpl implements DataService {
             ConcurrentHashMap<>();
     private Set<Integer> doneSet = ConcurrentHashMap.newKeySet();
 
-    public DataServiceImpl(BlockingQueue<ArrayList<Integer>> out, int
+    public DataServiceImpl(BlockingQueue<LinkedList<Integer>> out, int
      nSorters) {
         outQueue = out;
         expectedSorters = nSorters;
     }
 
     @Override
-    public int uploadData(int id, ArrayList<Integer> data, boolean done) {
+    public int uploadData(int id, LinkedList<Integer> data, boolean done) {
         int n = id;
         //Add data for first time
         if (id < 0) {
@@ -149,7 +150,7 @@ public class DataServiceImpl implements DataService {
             while (!done) {
                 min = -1;
                 bufId = -1;
-                ArrayList<Integer> b;
+                LinkedList<Integer> b;
 
                 //Compare first elements in all buffers
                 for (int i = 0; i < nBuf; i++) {
@@ -189,7 +190,7 @@ public class DataServiceImpl implements DataService {
 
                 if (bufId > -1) {
                     //Move min from original buffer to output buffer
-                    outBuf.add(buffers.get(bufId).remove(0));
+                    outBuf.add(buffers.get(bufId).poll());
                     outCount++;
                 }
                 //Send data if cache limit reached or done
@@ -197,7 +198,7 @@ public class DataServiceImpl implements DataService {
                     System.err.println("Sending data");
                     if (!outBuf.isEmpty())
                         outQueue.add(outBuf);
-                    outBuf = new ArrayList<>();
+                    outBuf = new LinkedList<>();
                     outCount = 0;
                 }
             }

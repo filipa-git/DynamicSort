@@ -4,10 +4,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.Scanner;
+import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -55,7 +52,7 @@ public class Main {
             }
             else if (args[0].equals("data")) {
                 try {
-                    BlockingQueue<ArrayList<Integer>> resQ = new
+                    BlockingQueue<LinkedList<Integer>> resQ = new
                             LinkedBlockingQueue<>();
 
                     //Create remote object and stub
@@ -73,7 +70,7 @@ public class Main {
                     //Create control thread
                     Runnable upload = () -> {
                         try {
-                            ArrayList<Integer> res;
+                            LinkedList<Integer> res;
                             int prev;
                             boolean sorted = true, done = false;
                             int tSize = 0;
