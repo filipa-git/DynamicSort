@@ -41,11 +41,11 @@ public class Server {
                             dataRegistry.lookup
                             ("DataProviderService");
 
-                    ArrayList<Integer> data = new ArrayList<>();
+                    ArrayList<Integer> data;
                     while (!done || !out.isEmpty()) {
                         data = out.take();
                         if (!data.isEmpty()) {
-                            provider.uploadData(out.take());
+                            provider.uploadData(data);
                             System.err.println("Uploaded data");
                         }
                     }
