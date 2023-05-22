@@ -35,11 +35,11 @@ public class DataProviderServiceImpl implements DataProviderService {
     }
 
     public long initData(String cmd) {
-        long sTime = 0;
+        long sTime;
         ArrayList<ArrayList<Integer>> tempList = new ArrayList<>();
+        Random rand = new Random();
         switch (cmd){
-            case "rand":
-                Random rand = new Random();
+            case "srand":
                 rand.setSeed(42);
                 System.err.println(n_chunks);
                 for (int j = 0; j < n_chunks; j++) {
@@ -51,29 +51,112 @@ public class DataProviderServiceImpl implements DataProviderService {
                     }
                     tempList.add(l);
                 }
-
-                sizeLock.lock();
-                try {
-                    testSize = list_size * n_chunks;
-                    currSize = 0;
-                }
-                finally {
-                    sizeLock.unlock();
-                }
-
-                sTime = System.currentTimeMillis();
-                try {
-                    for (ArrayList<Integer> e : tempList) {
-                        System.err.println("Adding data " + e.size());
-                        q.put(e);
+                break;
+            case "sgaus3":
+                rand.setSeed(42);
+                System.err.println(n_chunks);
+                for (int j = 0; j < n_chunks; j++) {
+                    ArrayList<Integer> l = new ArrayList<>();
+                    System.err.println(list_size);
+                    for (int i = 0; i < list_size; i++) {
+                        Integer r;
+                        do {
+                            r = (int) (rand.nextGaussian() * 1000 + 8000000);
+                        } while (r < 0);
+                        l.add(r);
                     }
-                }
-                catch (Exception e) {
-                    e.printStackTrace();
+                    tempList.add(l);
                 }
                 break;
+            case "sgaus4":
+                rand.setSeed(42);
+                System.err.println(n_chunks);
+                for (int j = 0; j < n_chunks; j++) {
+                    ArrayList<Integer> l = new ArrayList<>();
+                    System.err.println(list_size);
+                    for (int i = 0; i < list_size; i++) {
+                        Integer r;
+                        do {
+                            r = (int) (rand.nextGaussian() * 10000 + 8000000);
+                        } while (r < 0);
+                        l.add(r);
+                    }
+                    tempList.add(l);
+                }
+                break;
+            case "sgaus5":
+                rand.setSeed(42);
+                System.err.println(n_chunks);
+                for (int j = 0; j < n_chunks; j++) {
+                    ArrayList<Integer> l = new ArrayList<>();
+                    System.err.println(list_size);
+                    for (int i = 0; i < list_size; i++) {
+                        Integer r;
+                        do {
+                            r = (int) (rand.nextGaussian() * 100000 + 8000000);
+                        } while (r < 0);
+                        l.add(r);
+                    }
+                    tempList.add(l);
+                }
+                break;
+            case "sgaus6":
+                rand.setSeed(42);
+                System.err.println(n_chunks);
+                for (int j = 0; j < n_chunks; j++) {
+                    ArrayList<Integer> l = new ArrayList<>();
+                    System.err.println(list_size);
+                    for (int i = 0; i < list_size; i++) {
+                        Integer r;
+                        do {
+                            r = (int) (rand.nextGaussian() * 1000000 + 8000000);
+                        } while (r < 0);
+                        l.add(r);
+                    }
+                    tempList.add(l);
+                }
+                break;
+            case "sgaus7":
+                rand.setSeed(42);
+                System.err.println(n_chunks);
+                for (int j = 0; j < n_chunks; j++) {
+                    ArrayList<Integer> l = new ArrayList<>();
+                    System.err.println(list_size);
+                    for (int i = 0; i < list_size; i++) {
+                        Integer r;
+                        do {
+                            r = (int) (rand.nextGaussian() * 10000000 +
+                                    30000000);
+                        } while (r < 0);
+                        l.add(r);
+                    }
+                    tempList.add(l);
+                }
+                break;
+
             default:
-                break;
+                return 0;
+        }
+
+        sizeLock.lock();
+        try {
+            testSize = list_size * n_chunks;
+            currSize = 0;
+        }
+        finally {
+            sizeLock.unlock();
+        }
+
+        //Start test
+        sTime = System.currentTimeMillis();
+        try {
+            for (ArrayList<Integer> e : tempList) {
+                System.err.println("Adding data " + e.size());
+                q.put(e);
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
         }
         return sTime;
     }
