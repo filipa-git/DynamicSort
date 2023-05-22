@@ -5,7 +5,9 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * @author: filip
@@ -14,36 +16,72 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class DataProviderServiceImpl implements DataProviderService {
     private final int LIST_SIZE = 1000;
     private final int MAX_VAL = 16000000;
+    private final int N_CHUNKS = 1;
     private Integer[] listA = new Integer[]{31,54,81,59,50,9,9,395,338,3};
     private Integer[] listB = new Integer[]{28,67,88,50,3,107,52,395,909,1};
     private ConcurrentLinkedQueue<ArrayList<Integer>> q = new ConcurrentLinkedQueue<>();
     private ArrayList<Integer> bigList = new ArrayList<>();
-    private ArrayList<Integer> resList = new ArrayList<>();
+    private BlockingQueue<ArrayList<Integer>> resQ;
+    private int testSize, currSize;
+    private ReentrantLock sizeLock = new ReentrantLock();
+    private long endTime;
 
-    public DataProviderServiceImpl() {
-        Random rand = new Random();
-        rand.setSeed(System.currentTimeMillis());
-        for (int i=0; i<LIST_SIZE; i++)
-        {
-            Integer r = rand.nextInt(MAX_VAL);
-            bigList.add(r);
+    public DataProviderServiceImpl(BlockingQueue<ArrayList<Integer>> resQ) {
+        this.resQ = resQ;
+    }
+
+    public long initData(String cmd) {
+        long sTime = 0;
+        switch (cmd){
+            case "rand":
+                Random rand = new Random();
+                rand.setSeed(System.currentTimeMillis());
+                for (int i=0; i<LIST_SIZE; i++)
+                {
+                    Integer r = rand.nextInt(MAX_VAL);
+                    bigList.add(r);
+                }
+
+                sizeLock.lock();
+                try {
+                    testSize = LIST_SIZE * N_CHUNKS;
+                    currSize = 0;
+                }
+                finally {
+                    sizeLock.unlock();
+                }
+
+                sTime = System.currentTimeMillis();
+                q.add(bigList);
+                break;
+            default:
+                break;
         }
-        q.add(bigList);
+        return sTime;
+    }
+
+    public long getEndTime() {
+        return endTime;
     }
 
     @Override
     public void uploadData(ArrayList<Integer> data) throws RemoteException {
-        int prev = -1;
-        boolean sorted = true;
-        for (int i:
-             data) {
-            if (prev > i)
-                sorted = false;
+        long time = System.currentTimeMillis();
+        sizeLock.lock();
+        try {
+            //update total size
+            currSize += data.size();
+            //send data to control
+            resQ.add(data);
+            //check if test done
+            if (currSize >= testSize) {
+                resQ.add(new ArrayList<>()); //stop condition for control
+                endTime = time;
+            }
         }
-        System.err.println("Got data, it was " + (sorted ? "" : "not") +
-                "sorted");
-        resList.addAll(data);
-        System.err.println("Total size: " + resList.size());
+        finally {
+            sizeLock.unlock();
+        }
     }
 
     @Override

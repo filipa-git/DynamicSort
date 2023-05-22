@@ -6,6 +6,11 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.Scanner;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Main {
 
@@ -50,8 +55,12 @@ public class Main {
             }
             else if (args[0].equals("data")) {
                 try {
+                    BlockingQueue<ArrayList<Integer>> resQ = new
+                            LinkedBlockingQueue<>();
+
                     //Create remote object and stub
-                    DataProviderService data = new DataProviderServiceImpl();
+                    DataProviderService data = new DataProviderServiceImpl
+                            (resQ);
                     DataProviderService stub = (DataProviderService)
                             UnicastRemoteObject.exportObject
                                     (data, 0);
@@ -60,8 +69,74 @@ public class Main {
                     Registry registry = LocateRegistry.createRegistry(1099);
                     registry.rebind("DataProviderService", stub);
                     System.err.println("Data provider ready");
+
+                    //Create control thread
+                    Runnable upload = () -> {
+                        try {
+                            ArrayList<Integer> res;
+                            int prev;
+                            boolean sorted, done = false;
+                            int tSize = 0;
+                            while (!done || !resQ.isEmpty()) {
+                                res = resQ.take();
+                                if (!res.isEmpty()) {
+                                    prev = -1;
+                                    sorted = true;
+                                    for (int i :
+                                            res) {
+                                        if (prev > i)
+                                            sorted = false;
+                                        tSize++;
+                                    }
+                                    System.err.println("Got data, it was " + (sorted ? "" : "not") +
+                                            "sorted");
+                                    System.err.println("Total size: " + tSize);
+                                }
+                                else {
+                                    done = true;
+                                }
+                            }
+                            System.err.println("Thread done");
+                        }
+                        catch (Exception e) {
+                            System.err.println("Error (thread): " + e.getMessage());
+                            e.printStackTrace();
+                        }
+                    };
+
+                    //Read input
+                    Scanner inLine = new Scanner(System.in);
+                    Thread cThread;
+                    long sTime;
+                    long eTime;
+                    boolean done = false;
+                    String cmd;
+                    while (!done) {
+                        cmd = inLine.nextLine();
+                        switch (cmd){
+                            case "rand":
+                                //Start control thread
+                                cThread = new Thread(upload);
+                                cThread.start();
+                                //Start test
+                                sTime = ((DataProviderServiceImpl) data)
+                                        .initData(cmd);
+                                System.err.println("Start time: " + sTime);
+                                //Wait for control thread (test is done)
+                                cThread.join();
+                                //Get end time
+                                eTime = ((DataProviderServiceImpl) data)
+                                        .initData(cmd);
+                                System.err.println("End time: " + eTime);
+                                System.err.println("Time diff: " +
+                                        (eTime-sTime));
+                                break;
+                            default:
+                                done = true;
+                        }
+                    }
                 }
-                catch (RemoteException e) {
+                catch (Exception e) {
                     System.err.println("Error (data): " + e.getMessage());
                     e.printStackTrace();
                 }
