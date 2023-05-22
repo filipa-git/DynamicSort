@@ -36,7 +36,7 @@ public class DataProviderServiceImpl implements DataProviderService {
 
     public long initData(String cmd) {
         long sTime = 0;
-        LinkedList<ArrayList<Integer>> tempList = new LinkedList<>();
+        ArrayList<ArrayList<Integer>> tempList = new ArrayList<>();
         switch (cmd){
             case "rand":
                 Random rand = new Random();
