@@ -11,6 +11,7 @@ public class DynSort {
     private static final int CHOICE_SIZE = 3000000;
     private static final int INS_LIMIT = 10;
     private static final int DEV_LIMIT = 1000000;
+    private static final int N_DEV_LIMIT = 1000;
 
     public static ArrayList<Integer> dynamicSort(ArrayList<Integer> list) {
         System.err.println("dSort");
@@ -32,11 +33,13 @@ public class DynSort {
      */
     private static class KNode implements Comparable<KNode>{
         int i;
+        int ind;
         int val;
 
-        KNode (int i, int val){
+        KNode (int i, int ind, int val){
             this.i = i;
             this.val = val;
+            this.ind= ind;
         }
 
         @Override
@@ -58,10 +61,10 @@ public class DynSort {
         //partition
         for (int i = 0; i < k; i++) {
             ArrayList<Integer> p = new ArrayList<>();
-            for (int j = 0; j < CHOICE_SIZE; j++) {
-                if (list.isEmpty())
+            for (int j = CHOICE_SIZE*i; j < CHOICE_SIZE*(i+1); j++) {
+                if (j >= list.size())
                     break;
-                p.add(list.remove(0));
+                p.add(list.get(j));
             }
             parts.add(p);
         }
@@ -73,18 +76,21 @@ public class DynSort {
 
         //merge using priority queue
         for (int i = 0; i < k; i++) {
-            pq.add(new KNode(i, parts.get(i).remove(0)));
+            pq.add(new KNode(i, 0, parts.get(i).get(0)));
         }
 
         KNode curr;
+        int ind;
         ArrayList<Integer> p;
+        list.clear();
         while (!pq.isEmpty()) {
             curr = pq.poll();
             list.add(curr.val);
 
             p = parts.get(curr.i);
-            if (!p.isEmpty())
-                pq.add(new KNode(curr.i, p.remove(0)));
+            ind = (curr.ind)+1;
+            if (ind < p.size())
+                pq.add(new KNode(curr.i, ind, p.get(ind)));
         }
 
         return list;
@@ -102,37 +108,46 @@ public class DynSort {
         int high = list.size()-1;
         int lowSum = 0;
         int highSum = 0;
+        int lowUsed = 0;
+        int highUsed = 0;
         //Use insertion sort if list is appropriately small
         if (high+1 <= INS_LIMIT)
             insertionSort(list);
         else {
             int pivot = list.get(high);
-            int i = low-1;
-
-            for (int j = low; j <= high; j++) {
-                if (list.get(j) < pivot) {
-                    i++;
-                    lowSum+=list.get(j);
-                    Collections.swap(list, i, j);
-                }
-                else
-                    highSum+=list.get(j);
-            }
-
-            Collections.swap(list, i+1, high);
-
-            System.err.println("calculating deviation");
-            //Divide into new lists while calculating standard deviation
             ArrayList<Integer> lowNums = new ArrayList<>();
-            if (i > -1) {
-                double lowMean = lowSum / (i + 1);
-                double lowDev = 0;
-                while (lowNums.size() < i + 1) {
-                    int v = list.remove(0);
-                    lowDev += Math.pow(v - lowMean, 2);
+            ArrayList<Integer> highNums = new ArrayList<>();
+
+            //divide into low and high lists
+            for (int j = low; j < high; j++) {
+                Integer v = list.get(j);
+                if (v < pivot) {
+                    if (lowUsed < N_DEV_LIMIT) {
+                        lowSum += list.get(j);
+                        lowUsed++;
+                    }
                     lowNums.add(v);
                 }
-                lowDev = Math.sqrt(lowDev / (i + 1));
+                else {
+                    highNums.add(v);
+                    if (highUsed < N_DEV_LIMIT) {
+                        highSum += list.get(j);
+                        highUsed++;
+                    }
+                }
+            }
+
+            System.err.println("calculating deviation (low)");
+            //calculate standard deviation
+            if (!lowNums.isEmpty()) {
+                double lowMean = lowSum / lowUsed;
+                double lowDev = 0;
+                for (int i = 0; i < lowUsed; i++) {
+                    int v = lowNums.get(i);
+                    lowDev += Math.pow(v - lowMean, 2);
+                }
+                lowDev = Math.sqrt(lowDev / (lowUsed-1));
+                System.err.println("done");
 
                 //Sort lownums
                 if (lowDev < DEV_LIMIT)
@@ -140,22 +155,17 @@ public class DynSort {
                 else
                     radixSort(lowNums);
             }
-            System.err.println("done");
 
-            //Remove pivot
-            list.remove(0);
-
-            System.err.println("calculating deviation");
-            ArrayList<Integer> highNums = new ArrayList<>();
-            if (!list.isEmpty()) {
-                double highMean = highSum / (list.size());
+            System.err.println("calculating deviation (high)");
+            if (!highNums.isEmpty()) {
+                double highMean = highSum / highUsed;
                 double highDev = 0;
-                while (!list.isEmpty()) {
-                    int v = list.remove(0);
+                for (int i = 0; i < highUsed; i++) {
+                    int v = highNums.get(i);
                     highDev += Math.pow(v - highMean, 2);
-                    highNums.add(v);
                 }
-                highDev = Math.sqrt(highDev / (i + 1));
+                highDev = Math.sqrt(highDev / highUsed);
+                System.err.println("done");
 
                 //sort highnums
                 if (highDev < DEV_LIMIT)
@@ -163,9 +173,9 @@ public class DynSort {
                 else
                     radixSort(highNums);
             }
-            System.err.println("done");
 
             //Add all to same list
+            list.clear();
             list.addAll(lowNums);
             list.add(pivot);
             list.addAll(highNums);

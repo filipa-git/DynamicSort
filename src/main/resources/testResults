@@ -1,0 +1,7 @@
+#Random numbers (seeded), full dev calculation:
+#n,time(millis), quick, radix, insertion
+500000, 12027, 1, 2, 0
+1000000, 49203, 1, 2, 0
+2000000, 222408, 1, 2, 0
+
+#Random numbers (seeded), partial dev calculation (limit = 1000)
