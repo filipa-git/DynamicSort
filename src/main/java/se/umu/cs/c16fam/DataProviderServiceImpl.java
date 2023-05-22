@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.Random;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
@@ -19,7 +20,7 @@ public class DataProviderServiceImpl implements DataProviderService {
     private final int N_CHUNKS = 1;
     private Integer[] listA = new Integer[]{31,54,81,59,50,9,9,395,338,3};
     private Integer[] listB = new Integer[]{28,67,88,50,3,107,52,395,909,1};
-    private ConcurrentLinkedQueue<ArrayList<Integer>> q = new ConcurrentLinkedQueue<>();
+    private BlockingQueue<ArrayList<Integer>> q = new LinkedBlockingQueue<>();
     private ArrayList<Integer> bigList = new ArrayList<>();
     private BlockingQueue<ArrayList<Integer>> resQ;
     private int testSize, currSize;
@@ -86,6 +87,14 @@ public class DataProviderServiceImpl implements DataProviderService {
 
     @Override
     public ArrayList<Integer> getData() throws RemoteException {
-        return q.remove();
+        ArrayList<Integer> data;
+        try {
+            data = q.take();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            data = new ArrayList<>();
+        }
+        return data;
     }
 }

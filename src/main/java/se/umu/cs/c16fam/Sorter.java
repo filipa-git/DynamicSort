@@ -51,6 +51,10 @@ public class Sorter {
             DataProviderService dataProvider = (DataProviderService)
                     dataRegistry.lookup("DataProviderService");
             ArrayList<Integer> data = dataProvider.getData();
+            if (data.isEmpty()) {
+                System.err.println("Got empty data");
+                System.exit(1);
+            }
             System.err.println("Got data " + data.toString());
 
             //Sort data
