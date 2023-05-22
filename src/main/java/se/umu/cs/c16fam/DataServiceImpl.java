@@ -127,9 +127,12 @@ public class DataServiceImpl implements DataService {
             countLock.unlock();
         }
 
+        ArrayList<Integer> bufInds = new ArrayList<>();
+
         for (int i = 0; i < nBuf; i++) {
             try {
                 bufLocks.get(i).lock();
+                bufInds.add(i,0);
             }
             catch (Exception e) {
                 e.printStackTrace();
@@ -157,7 +160,7 @@ public class DataServiceImpl implements DataService {
                 for (int i = 0; i < nBuf; i++) {
                     b = buffers.get(i);
                     if (b != null) {
-                        if (b.isEmpty()) {
+                        if (bufInds.get(i) >= b.size() || b.isEmpty()) {
                             //remove if done or repeated
                             if (doneSet.contains(i) || repeat) {
                                 buffers.remove(i);
@@ -168,6 +171,7 @@ public class DataServiceImpl implements DataService {
                             }
                             else {
                                 //allow more data
+                                buffers.put(i,new ArrayList<>());
                                 bufConds.get(i).signal();
                                 bufLocks.get(i).unlock();
                                 try {
@@ -179,10 +183,11 @@ public class DataServiceImpl implements DataService {
                                 bufLocks.get(i).lock();
                                 i--; //repeat this step in for-loop
                                 repeat = true;
+                                bufInds.set(i, 0);
                             }
                         }
-                        else if (b.get(0) < min || min == -1) {
-                            min = b.get(0);
+                        else if (b.get(bufInds.get(i)) < min || min == -1) {
+                            min = b.get(bufInds.get(i));
                             bufId = i;
                             repeat = false;
                         }
@@ -190,8 +195,10 @@ public class DataServiceImpl implements DataService {
                 }
 
                 if (bufId > -1) {
+                    int ind = bufInds.get(bufId);
                     //Move min from original buffer to output buffer
-                    outBuf.add(buffers.get(bufId).remove(0));
+                    outBuf.add(buffers.get(bufId).get(ind));
+                    bufInds.set(bufId, ind+1);
                     outCount++;
                 }
                 //Send data if cache limit reached or done
