@@ -19,6 +19,7 @@ public class DynSort {
 
         if (size > CHOICE_SIZE){
             int k = (int) Math.ceil(size/CHOICE_SIZE);
+            System.err.println("k: " + k);
             kMergeSort(list, k);
         }
         else {
@@ -64,9 +65,11 @@ public class DynSort {
             for (int j = CHOICE_SIZE*i; j < CHOICE_SIZE*(i+1); j++) {
                 if (j >= list.size())
                     break;
-                p.add(list.get(j));
+                else
+                    p.add(list.get(j));
             }
             parts.add(p);
+            System.err.println("Added partition " + p.size());
         }
 
         //sort partitions
