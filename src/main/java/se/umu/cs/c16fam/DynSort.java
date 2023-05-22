@@ -116,10 +116,10 @@ public class DynSort {
     private void cQuickSort(ArrayList<Integer> list) {
         int low = 0;
         int high = list.size()-1;
-        int lowSum = 0;
-        int highSum = 0;
-        int lowUsed = 0;
-        int highUsed = 0;
+        double lowSum = 0;
+        double highSum = 0;
+        double lowUsed = 0;
+        double highUsed = 0;
         //Use insertion sort if list is appropriately small
         if (high+1 <= INS_LIMIT)
             insertionSort(list);
