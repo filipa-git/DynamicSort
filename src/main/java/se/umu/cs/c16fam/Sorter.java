@@ -75,17 +75,19 @@ public class Sorter {
                 ArrayList<Integer> partList = new ArrayList<>();
                 if (data.size() - currInd > upload_limit) {
                     for (int i = currInd; i < upload_limit*nLoops; i++) {
-                        partList.add(0,data.get(i));
+                        partList.add(data.get(i));
                         currInd++;
                     }
                 }
                 else {
                     for (int i = currInd; i < data.size(); i++) {
-                        partList.add(0,data.remove(i));
+                        partList.add(data.get(i));
                         currInd++;
                     }
                     done = true;
                 }
+
+                if (!partList.isEmpty())
                 if (id == -1)
                     id = server.uploadData(-1,partList,done);
                 else
