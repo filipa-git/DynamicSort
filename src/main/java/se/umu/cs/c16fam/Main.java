@@ -123,7 +123,7 @@ public class Main {
                                 cThread.join();
                                 //Get end time
                                 eTime = ((DataProviderServiceImpl) data)
-                                        .initData(cmd);
+                                        .getEndTime();
                                 System.err.println("End time: " + eTime);
                                 System.err.println("Time diff: " +
                                         (eTime-sTime));
