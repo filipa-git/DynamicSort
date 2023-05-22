@@ -92,7 +92,7 @@ public class Main {
                                     done = true;
                                 }
                             }
-                            System.err.println("Thread done, data of size" +
+                            System.err.println("Thread done, data of size " +
                                             tSize + " was " + (sorted?"":"not") + "sorted");
                         }
                         catch (Exception e) {
