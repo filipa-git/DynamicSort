@@ -146,7 +146,9 @@ public class DataServiceImpl implements DataService {
             boolean done = false;
             boolean repeat = false;//failsafe if sorter crashes
 
+            int test = 0;
             while (!done) {
+                System.err.println(test++);
                 min = -1;
                 bufId = -1;
                 ArrayList<Integer> b;
