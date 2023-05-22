@@ -137,6 +137,7 @@ public class DataServiceImpl implements DataService {
             }
         }
 
+        System.err.println("Beginning merge");
         try {
             //K-way merge sort
             int min;
@@ -148,10 +149,11 @@ public class DataServiceImpl implements DataService {
             while (!done) {
                 min = -1;
                 bufId = -1;
+                ArrayList<Integer> b;
 
                 //Compare first elements in all buffers
                 for (int i = 0; i < nBuf; i++) {
-                    ArrayList<Integer> b = buffers.get(i);
+                    b = buffers.get(i);
                     if (b != null) {
                         if (b.isEmpty()) {
                             //remove if done or repeated
@@ -161,7 +163,8 @@ public class DataServiceImpl implements DataService {
                                 if (buffers.isEmpty())
                                     done = true;
                                 repeat = false;
-                            } else {
+                            }
+                            else {
                                 //allow more data
                                 bufConds.get(i).signal();
                                 bufLocks.get(i).unlock();
@@ -175,7 +178,8 @@ public class DataServiceImpl implements DataService {
                                 i--; //repeat this step in for-loop
                                 repeat = true;
                             }
-                        } else if (b.get(0) < min || min == -1) {
+                        }
+                        else if (b.get(0) < min || min == -1) {
                             min = b.get(0);
                             bufId = i;
                             repeat = false;
@@ -190,9 +194,10 @@ public class DataServiceImpl implements DataService {
                 }
                 //Send data if cache limit reached or done
                 if (outCount == CACHE_LIMIT || done) {
+                    System.err.println("Sending data");
                     if (!outBuf.isEmpty())
                         outQueue.add(outBuf);
-                    outBuf = new ArrayList<>(CACHE_LIMIT);
+                    outBuf = new ArrayList<>();
                     outCount = 0;
                 }
             }

@@ -121,6 +121,7 @@ public class DynSort {
 
             Collections.swap(list, i+1, high);
 
+            System.err.println("calculating deviation");
             //Divide into new lists while calculating standard deviation
             ArrayList<Integer> lowNums = new ArrayList<>();
             if (i > -1) {
@@ -139,10 +140,12 @@ public class DynSort {
                 else
                     radixSort(lowNums);
             }
+            System.err.println("done");
 
             //Remove pivot
             list.remove(0);
 
+            System.err.println("calculating deviation");
             ArrayList<Integer> highNums = new ArrayList<>();
             if (!list.isEmpty()) {
                 double highMean = highSum / (list.size());
@@ -160,6 +163,7 @@ public class DynSort {
                 else
                     radixSort(highNums);
             }
+            System.err.println("done");
 
             //Add all to same list
             list.addAll(lowNums);

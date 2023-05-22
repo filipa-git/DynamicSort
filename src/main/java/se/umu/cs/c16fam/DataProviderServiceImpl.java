@@ -15,7 +15,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * @since: 2023-05-20.
  */
 public class DataProviderServiceImpl implements DataProviderService {
-    private final int LIST_SIZE = 1000000;
+    private final int LIST_SIZE = 500000;
     private final int MAX_VAL = 16000000;
     private final int N_CHUNKS = 1;
     private Integer[] listA = new Integer[]{31,54,81,59,50,9,9,395,338,3};
@@ -36,7 +36,7 @@ public class DataProviderServiceImpl implements DataProviderService {
         switch (cmd){
             case "rand":
                 Random rand = new Random();
-                rand.setSeed(System.currentTimeMillis());
+                rand.setSeed(42);
                 for (int i=0; i<LIST_SIZE; i++)
                 {
                     Integer r = rand.nextInt(MAX_VAL);
