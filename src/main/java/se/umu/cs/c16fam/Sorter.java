@@ -11,7 +11,7 @@ import java.util.ArrayList;
  * @since: 2023-05-19.
  */
 public class Sorter {
-    private final int UPLOAD_LIMIT = 200;
+    private final int UPLOAD_LIMIT = 16000000;
     private Registry serverRegistry;
     private Registry dataRegistry;
 
@@ -55,7 +55,7 @@ public class Sorter {
                 System.err.println("Got empty data");
                 System.exit(1);
             }
-            System.err.println("Got data " + data.toString());
+            System.err.println("Got data");
 
             //Sort data
             DynSort.dynamicSort(data);

@@ -75,28 +75,25 @@ public class Main {
                         try {
                             ArrayList<Integer> res;
                             int prev;
-                            boolean sorted, done = false;
+                            boolean sorted = true, done = false;
                             int tSize = 0;
                             while (!done || !resQ.isEmpty()) {
                                 res = resQ.take();
                                 if (!res.isEmpty()) {
                                     prev = -1;
-                                    sorted = true;
                                     for (int i :
                                             res) {
                                         if (prev > i)
                                             sorted = false;
                                         tSize++;
                                     }
-                                    System.err.println("Got data, it was " + (sorted ? "" : "not") +
-                                            "sorted");
-                                    System.err.println("Total size: " + tSize);
                                 }
                                 else {
                                     done = true;
                                 }
                             }
-                            System.err.println("Thread done");
+                            System.err.println("Thread done, data of size" +
+                                            tSize + " was " + (sorted?"":"not") + "sorted");
                         }
                         catch (Exception e) {
                             System.err.println("Error (thread): " + e.getMessage());
