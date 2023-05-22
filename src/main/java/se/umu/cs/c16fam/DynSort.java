@@ -110,6 +110,7 @@ public class DynSort {
             int i = low-1;
 
             for (int j = low; j <= high; j++) {
+                System.err.println(j);
                 if (list.get(j) < pivot) {
                     i++;
                     lowSum+=list.get(j);
