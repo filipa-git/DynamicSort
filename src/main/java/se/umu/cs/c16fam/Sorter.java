@@ -72,10 +72,7 @@ public class Sorter {
                     }
                 }
                 else {
-                    int size = data.size();
-                    for (int i = 0; i < size; i++) {
-                        partList.add(data.poll());
-                    }
+                    partList = data;
                     done = true;
                 }
 
