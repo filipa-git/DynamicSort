@@ -77,8 +77,10 @@ public class Sorter {
                     }
                     done = true;
                 }
-                if (id == -1)
-                    id = server.uploadData(-1,partList,done);
+                if (id == -1) {
+                    System.err.println("Size: " + partList.size());
+                    id = server.uploadData(-1, partList, done);
+                }
                 else
                     server.uploadData(id,partList,done);
             }

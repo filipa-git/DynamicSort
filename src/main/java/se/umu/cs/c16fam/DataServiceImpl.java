@@ -195,7 +195,7 @@ public class DataServiceImpl implements DataService {
                 }
                 //Send data if cache limit reached or done
                 if (outCount == CACHE_LIMIT || done) {
-                    System.err.println("Sending data");
+                    System.err.println("Sending data: " + outBuf.size());
                     if (!outBuf.isEmpty())
                         outQueue.add(outBuf);
                     outBuf = new LinkedList<>();
