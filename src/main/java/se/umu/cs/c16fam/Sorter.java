@@ -72,11 +72,13 @@ public class Sorter {
                     }
                 }
                 else {
-                    for (int i = 0; i < data.size(); i++) {
+                    int size = data.size();
+                    for (int i = 0; i < size; i++) {
                         partList.add(data.poll());
                     }
                     done = true;
                 }
+
                 if (id == -1) {
                     System.err.println("Size: " + partList.size());
                     id = server.uploadData(-1, partList, done);
