@@ -84,6 +84,7 @@ public class DataServiceImpl implements DataService {
                     bufConds.get(n).await();
                 //Add data
                 buffers.put(n, data);
+                bufConds.get(n).signal();
             }
             catch (Exception e) {
                 e.printStackTrace();
@@ -174,14 +175,14 @@ public class DataServiceImpl implements DataService {
                                 //allow more data
                                 buffers.put(i,new ArrayList<>());
                                 bufConds.get(i).signal();
-                                bufLocks.get(i).unlock();
+                                //Wait for more data
                                 try {
-                                    Thread.sleep(1000);
+                                    while (buffers.get(i).isEmpty())
+                                        bufConds.get(i).await();
                                 }
                                 catch (Exception e) {
                                     e.printStackTrace();
                                 }
-                                bufLocks.get(i).lock();
                                 bufInds.set(i, 0);
                                 i--; //repeat this step in for-loop
                                 repeat = true;
