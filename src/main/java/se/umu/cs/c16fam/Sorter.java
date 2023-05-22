@@ -4,7 +4,7 @@ import java.lang.reflect.Array;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.util.LinkedList;
+import java.util.ArrayList;
 
 /**
  * @author: filip
@@ -50,7 +50,7 @@ public class Sorter {
             DataService server = (DataService) serverRegistry.lookup("DataService");
             DataProviderService dataProvider = (DataProviderService)
                     dataRegistry.lookup("DataProviderService");
-            LinkedList<Integer> data = dataProvider.getData();
+            ArrayList<Integer> data = dataProvider.getData();
             if (data.isEmpty()) {
                 System.err.println("Got empty data");
                 System.exit(1);
@@ -63,23 +63,21 @@ public class Sorter {
             //send data to server
             int id = -1;
             boolean done = false;
-            System.err.println("Sending data of size " + data.size());
             while (!done) {
-                LinkedList<Integer> partList = new LinkedList<>();
+                ArrayList<Integer> partList = new ArrayList<>();
                 if (data.size() > UPLOAD_LIMIT) {
-                    for (int i = 0; i < UPLOAD_LIMIT; i++) {
-                        partList.add(data.poll());
+                    for (int i = UPLOAD_LIMIT-1; i >= 0; i--) {
+                        partList.add(0,data.remove(i));
                     }
                 }
                 else {
-                    partList = data;
+                    for (int i = data.size()-1; i >= 0; i--) {
+                        partList.add(0,data.remove(i));
+                    }
                     done = true;
                 }
-
-                if (id == -1) {
-                    System.err.println("Size: " + partList.size());
-                    id = server.uploadData(-1, partList, done);
-                }
+                if (id == -1)
+                    id = server.uploadData(-1,partList,done);
                 else
                     server.uploadData(id,partList,done);
             }

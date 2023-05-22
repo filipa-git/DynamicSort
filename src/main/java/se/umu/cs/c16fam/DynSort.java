@@ -12,7 +12,7 @@ public class DynSort {
     private static final int INS_LIMIT = 10;
     private static final int DEV_LIMIT = 1000000;
 
-    public static LinkedList<Integer> dynamicSort(LinkedList<Integer> list) {
+    public static ArrayList<Integer> dynamicSort(ArrayList<Integer> list) {
         System.err.println("dSort");
         int size = list.size();
 
@@ -48,43 +48,43 @@ public class DynSort {
         }
     }
 
-    private static LinkedList<Integer> kMergeSort(LinkedList<Integer> list, int
+    private static ArrayList<Integer> kMergeSort(ArrayList<Integer> list, int
             k) {
         System.err.println("kSort");
         Queue<KNode> pq = new PriorityQueue<>();
 
-        LinkedList<LinkedList<Integer>> parts = new LinkedList<>();
+        ArrayList<ArrayList<Integer>> parts = new ArrayList<>();
 
         //partition
         for (int i = 0; i < k; i++) {
-            LinkedList<Integer> p = new LinkedList<>();
+            ArrayList<Integer> p = new ArrayList<>();
             for (int j = 0; j < CHOICE_SIZE; j++) {
                 if (list.isEmpty())
                     break;
-                p.add(list.poll());
+                p.add(list.remove(0));
             }
             parts.add(p);
         }
 
         //sort partitions
-        for (LinkedList<Integer> part : parts) {
+        for (ArrayList<Integer> part : parts) {
             cQuickSort(part);
         }
 
         //merge using priority queue
         for (int i = 0; i < k; i++) {
-            pq.add(new KNode(i, parts.get(i).poll()));
+            pq.add(new KNode(i, parts.get(i).remove(0)));
         }
 
         KNode curr;
-        LinkedList<Integer> p;
+        ArrayList<Integer> p;
         while (!pq.isEmpty()) {
             curr = pq.poll();
             list.add(curr.val);
 
             p = parts.get(curr.i);
             if (!p.isEmpty())
-                pq.add(new KNode(curr.i, p.poll()));
+                pq.add(new KNode(curr.i, p.remove(0)));
         }
 
         return list;
@@ -96,7 +96,7 @@ public class DynSort {
      * @param list
      * @return
      */
-    private static void cQuickSort(LinkedList<Integer> list) {
+    private static void cQuickSort(ArrayList<Integer> list) {
         System.err.println("qSort");
         int low = 0;
         int high = list.size()-1;
@@ -110,7 +110,6 @@ public class DynSort {
             int i = low-1;
 
             for (int j = low; j <= high; j++) {
-                System.err.println(j);
                 if (list.get(j) < pivot) {
                     i++;
                     lowSum+=list.get(j);
@@ -124,17 +123,16 @@ public class DynSort {
 
             System.err.println("calculating deviation");
             //Divide into new lists while calculating standard deviation
-            LinkedList<Integer> lowNums = new LinkedList<>();
+            ArrayList<Integer> lowNums = new ArrayList<>();
             if (i > -1) {
                 double lowMean = lowSum / (i + 1);
                 double lowDev = 0;
                 while (lowNums.size() < i + 1) {
-                    int v = list.poll();
+                    int v = list.remove(0);
                     lowDev += Math.pow(v - lowMean, 2);
                     lowNums.add(v);
                 }
                 lowDev = Math.sqrt(lowDev / (i + 1));
-                System.err.println("done");
 
                 //Sort lownums
                 if (lowDev < DEV_LIMIT)
@@ -142,22 +140,22 @@ public class DynSort {
                 else
                     radixSort(lowNums);
             }
+            System.err.println("done");
 
             //Remove pivot
-            list.poll();
+            list.remove(0);
 
             System.err.println("calculating deviation");
-            LinkedList<Integer> highNums = new LinkedList<>();
+            ArrayList<Integer> highNums = new ArrayList<>();
             if (!list.isEmpty()) {
                 double highMean = highSum / (list.size());
                 double highDev = 0;
                 while (!list.isEmpty()) {
-                    int v = list.poll();
+                    int v = list.remove(0);
                     highDev += Math.pow(v - highMean, 2);
                     highNums.add(v);
                 }
                 highDev = Math.sqrt(highDev / (i + 1));
-                System.err.println("done");
 
                 //sort highnums
                 if (highDev < DEV_LIMIT)
@@ -165,6 +163,7 @@ public class DynSort {
                 else
                     radixSort(highNums);
             }
+            System.err.println("done");
 
             //Add all to same list
             list.addAll(lowNums);
@@ -178,7 +177,7 @@ public class DynSort {
      * @param list the list to be sorted
      * @return the original list sorted
      */
-    public static LinkedList<Integer> insertionSort(LinkedList<Integer> list) {
+    public static ArrayList<Integer> insertionSort(ArrayList<Integer> list) {
         System.err.println("iSort");
         int n = list.size();
         int j;
@@ -198,7 +197,7 @@ public class DynSort {
      * @param list the list to be sorted
      * @return the original list sorted
      */
-    public static LinkedList<Integer> quickSort(LinkedList<Integer> list) {
+    public static ArrayList<Integer> quickSort(ArrayList<Integer> list) {
         internalQuickSort(list, 0, list.size()-1);
         return list;
     }
@@ -209,7 +208,7 @@ public class DynSort {
      * @param low lowest index to sort from
      * @param high highest index to sort to
      */
-    private static void internalQuickSort(LinkedList<Integer> list, int
+    private static void internalQuickSort(ArrayList<Integer> list, int
             low, int high) {
         if (low < high) {
             int pivot = partition(list, low, high);
@@ -225,7 +224,7 @@ public class DynSort {
      * @param high highest index to partition to (index of pivot element)
      * @return index of pivot element after correct placement
      */
-    private static int partition(LinkedList<Integer> list, int low, int high) {
+    private static int partition(ArrayList<Integer> list, int low, int high) {
         int pivot = list.get(high);
         int i = low-1;
 
@@ -245,7 +244,7 @@ public class DynSort {
      * @param list the list to sort
      * @return the original list sorted
      */
-    public static LinkedList<Integer> radixSort(LinkedList<Integer> list) {
+    public static ArrayList<Integer> radixSort(ArrayList<Integer> list) {
         System.err.println("rSort");
         if (list.size() <= INS_LIMIT)
             insertionSort(list);
@@ -285,12 +284,12 @@ public class DynSort {
      * @param list the list to be sorted
      * @return the original list sorted
      */
-    public static LinkedList<Integer> mergeSort(LinkedList<Integer> list) {
+    public static ArrayList<Integer> mergeSort(ArrayList<Integer> list) {
         internalMergeSort(list, 0, list.size()-1);
         return list;
     }
 
-    private static void internalMergeSort(LinkedList<Integer> list, int l,
+    private static void internalMergeSort(ArrayList<Integer> list, int l,
                                           int r) {
         if (l < r) {
             int mid = l + (r - l) / 2;
@@ -302,14 +301,14 @@ public class DynSort {
         }
     }
 
-    private static void internalMerge(LinkedList<Integer> list, int l, int m,
+    private static void internalMerge(ArrayList<Integer> list, int l, int m,
                                       int r) {
         int nl = m-l+1;
         int nr = r-m;
 
         //copy halves
-        LinkedList<Integer> left = new LinkedList<>();
-        LinkedList<Integer> right = new LinkedList<>();
+        ArrayList<Integer> left = new ArrayList<>();
+        ArrayList<Integer> right = new ArrayList<>();
 
         for (int i = 0; i < nl; i++)
             left.add(list.get(l+i));
