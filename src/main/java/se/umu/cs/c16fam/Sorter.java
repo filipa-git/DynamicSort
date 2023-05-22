@@ -63,6 +63,7 @@ public class Sorter {
             //send data to server
             int id = -1;
             boolean done = false;
+            System.err.println("Sending data of size " + data.size());
             while (!done) {
                 LinkedList<Integer> partList = new LinkedList<>();
                 if (data.size() > UPLOAD_LIMIT) {
