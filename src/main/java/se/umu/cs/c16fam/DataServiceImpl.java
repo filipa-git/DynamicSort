@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -176,9 +177,15 @@ public class DataServiceImpl implements DataService {
                                 bufLocks.get(i).unlock();
                                 //Wait for more data
                                 bufLocks.get(i).lock();
+                                boolean repeat = false;
                                 try {
-                                    while (buffers.get(i).isEmpty())
-                                        bufConds.get(i).await();
+                                    while (buffers.get(i).isEmpty() &&
+                                            !repeat) {
+                                        repeat = !bufConds.get(i).await(1000,
+                                                TimeUnit.MILLISECONDS);
+                                        if (repeat)
+                                            bufLocks.get(i).lock();
+                                    }
                                 }
                                 catch (Exception e) {
                                     e.printStackTrace();
