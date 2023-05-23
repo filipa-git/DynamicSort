@@ -124,7 +124,6 @@ public class DynSort {
         if (high+1 <= INS_LIMIT)
             insertionSort(list);
         else {
-            System.err.println("qSort");
             nQuick++;
             int pivot = list.get(high);
             ArrayList<Integer> lowNums = new ArrayList<>();
@@ -149,7 +148,6 @@ public class DynSort {
                 }
             }
 
-            System.err.println("calculating deviation (low)");
             //calculate standard deviation
             if (!lowNums.isEmpty()) {
                 double lowMean = lowSum / lowUsed;
@@ -159,7 +157,6 @@ public class DynSort {
                     lowDev += Math.pow(v - lowMean, 2);
                 }
                 lowDev = Math.sqrt(lowDev / (lowUsed-1));
-                System.err.println("done");
 
                 //Sort lownums
                 if (lowDev < DEV_LIMIT)
@@ -168,7 +165,6 @@ public class DynSort {
                     radixSort(lowNums);
             }
 
-            System.err.println("calculating deviation (high)");
             if (!highNums.isEmpty()) {
                 double highMean = highSum / highUsed;
                 double highDev = 0;
@@ -177,7 +173,6 @@ public class DynSort {
                     highDev += Math.pow(v - highMean, 2);
                 }
                 highDev = Math.sqrt(highDev / highUsed);
-                System.err.println("done");
 
                 //sort highnums
                 if (highDev < DEV_LIMIT)
@@ -200,7 +195,6 @@ public class DynSort {
      * @return the original list sorted
      */
     public ArrayList<Integer> insertionSort(ArrayList<Integer> list) {
-        System.err.println("iSort");
         nIns++;
         int n = list.size();
         int j;
@@ -271,7 +265,6 @@ public class DynSort {
         if (list.size() <= INS_LIMIT)
             insertionSort(list);
         else {
-            System.err.println("rSort");
             nRadix++;
             //Get max
             Integer max = Collections.max(list);

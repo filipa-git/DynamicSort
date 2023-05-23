@@ -159,7 +159,6 @@ public class DataServiceImpl implements DataService {
                 for (int i = 0; i < nBuf; i++) {
                     b = buffers.get(i);
                     if (b != null) {
-                        System.err.println(i);
                         if (bufInds.get(i) >= b.size() || b.isEmpty()) {
                             //remove if done or repeated
                             if (doneSet.contains(i)) {
@@ -170,6 +169,7 @@ public class DataServiceImpl implements DataService {
                                     done = true;
                             }
                             else {
+                                System.err.println(i + " needs more data");
                                 //allow more data
                                 buffers.put(i,new ArrayList<>());
                                 bufConds.get(i).signal();
@@ -183,6 +183,7 @@ public class DataServiceImpl implements DataService {
                                 catch (Exception e) {
                                     e.printStackTrace();
                                 }
+                                System.err.println(i + " got more data");
                                 bufInds.set(i, 0);
                                 i--; //repeat this step in for-loop
                             }
