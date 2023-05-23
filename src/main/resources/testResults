@@ -36,7 +36,7 @@
 1000000, , 1, , ,
 
 #standard deviation, time(millis), med quick,  med radix, med insertion
-#DynSort, Gaussian, 199998 keys, 3 sorters
+#DynSort, Gaussian, 1999998 keys, 3 sorters
 1000, 41233, 610068, 0, 6041
 1000, 39565, 610123, 0, 6018
 1000, 39403, 610140, 0, 6012
@@ -54,14 +54,14 @@
 10000000, 2931, 1, 2, 0
 
 #standard deviation, time(millis)
-#QuickSort, Gaussian, 199998 keys, 3 sorters
+#QuickSort, Gaussian, 1999998 keys, 3 sorters
 1000, 2812
 10000, 2648
 100000, 2619
 1000000, 2771
 10000000, 2689
 
-#RadixSort, Gaussian, 199998 keys, 3 sorters
+#RadixSort, Gaussian, 1999998 keys, 3 sorters
 1000, 2852
 10000, 2882
 100000, 2902
