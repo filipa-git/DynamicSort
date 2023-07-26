@@ -1,3 +1,5 @@
+#Testresults used in report
+
 #nsorters, nkeys, time(millis), partitions, quick, radix, insertion
 #DynSort, Random numbers (seed = 42), full dev calculation:
 1, 500000, 12027, 1, 1, 2, 0

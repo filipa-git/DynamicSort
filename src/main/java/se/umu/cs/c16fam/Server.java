@@ -1,19 +1,18 @@
 package se.umu.cs.c16fam;
 
-import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * @author: filip
- * @since: 2023-05-19.
+ * Server responsible for receiving data from sorters, merging data and
+ * sending to data provider.
+ * @author filipa-git
+ * @since 2023-05-19.
  */
 public class Server {
     private boolean done = false;
@@ -21,6 +20,13 @@ public class Server {
     private BlockingQueue<ArrayList<Integer>> out = new
             LinkedBlockingQueue<>();
 
+    /**
+     * Initialize
+     * @param expected          Number of expected sorters
+     * @param cache             Cache limit
+     * @param dataProviderName  Hostname/address of data provider
+     * @param dataProviderPort  Port of data provider
+     */
     public Server(int expected, int cache, String dataProviderName, int
             dataProviderPort) {
         try {
@@ -33,7 +39,7 @@ public class Server {
             Registry registry = LocateRegistry.createRegistry(1099);
             registry.rebind("DataService", stub);
 
-            //Create upload thread
+            //Create upload thread to data provider
             Runnable upload = () -> {
                 try {
                     Registry dataRegistry = LocateRegistry.getRegistry
@@ -60,11 +66,11 @@ public class Server {
             Thread uThread = new Thread(upload);
             uThread.start();
 
-            //Sort data
+            //Sort data (k-way merge sort)
             System.err.println("Server ready");
             ((DataServiceImpl)server).sortData();
 
-            //stop thread
+            //Stop upload thread
             done = true;
             uThread.join();
             System.err.println("Server done");

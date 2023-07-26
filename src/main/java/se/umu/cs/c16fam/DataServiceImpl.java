@@ -2,18 +2,17 @@ package se.umu.cs.c16fam;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * @author: filip
- * @since: 2023-05-19.
+ * Implementation of data service (server)
+ * @author filipa-git
+ * @since 2023-05-19.
  */
 public class DataServiceImpl implements DataService {
     private int cache_limit = 16000000;
@@ -33,6 +32,12 @@ public class DataServiceImpl implements DataService {
             ConcurrentHashMap<>();
     private Set<Integer> doneSet = ConcurrentHashMap.newKeySet();
 
+    /**
+     * Initialize
+     * @param out       Queue for outgoing data to data provider
+     * @param nSorters  Number of expected sorters
+     * @param cache     Cache limit
+     */
     public DataServiceImpl(BlockingQueue<ArrayList<Integer>> out, int
      nSorters, int cache) {
         outQueue = out;
@@ -40,6 +45,13 @@ public class DataServiceImpl implements DataService {
         cache_limit = cache/(nSorters+1);
     }
 
+    /**
+     * [Remote] Upload data (sorter -> server)
+     * @param id    Id of sorter, <0 if first upload
+     * @param data  The data
+     * @param done  Boolean indicating end-of-upload for sorter
+     * @return The id of the sorter for future uploads
+     */
     @Override
     public int uploadData(int id, ArrayList<Integer> data, boolean done) {
         int n = id;
@@ -61,7 +73,8 @@ public class DataServiceImpl implements DataService {
             bufLocks.put(n, l);
             bufConds.put(n, l.newCondition());
 
-            //Unlock when all expected buffers are present
+            //Check if this is the final expected buffer
+            //Unlock server when all expected buffers are present
             sortLock.lock();
             try {
                 if (bufCount == expectedSorters)
@@ -72,7 +85,7 @@ public class DataServiceImpl implements DataService {
             }
         }
         else {
-            //Aquire lock
+            //Aquire lock for buffer
             ReentrantLock lock = bufLocks.get(n);
             if (lock == null) {
                 System.err.println("Could not find lock " + n);
@@ -85,6 +98,7 @@ public class DataServiceImpl implements DataService {
                     bufConds.get(n).await();
                 //Add data
                 buffers.put(n, data);
+                //Signal that there is new data
                 bufConds.get(n).signal();
             }
             catch (Exception e) {
@@ -102,6 +116,10 @@ public class DataServiceImpl implements DataService {
         return n;
     }
 
+    /**
+     * Merge sorted data in buffers and send to data provider
+     * @throws RemoteException if remote communication fails
+     */
     public void sortData() throws RemoteException {
         //Wait for all buffers to be present
         countLock.lock();
@@ -109,6 +127,7 @@ public class DataServiceImpl implements DataService {
         try {
             while (expectedSorters != bufCount) {
                 countLock.unlock();
+                //Server waits here until all expected buffers are present
                 sortCond.await();
             }
         }
@@ -130,6 +149,7 @@ public class DataServiceImpl implements DataService {
             countLock.unlock();
         }
 
+        //Create list for keeping track of current buffer index
         ArrayList<Integer> bufInds = new ArrayList<>();
 
         for (int i = 0; i < nBuf; i++) {
@@ -151,8 +171,9 @@ public class DataServiceImpl implements DataService {
             int outCount = 0;
             boolean done = false;
 
+            //Done when no more buffers present
             while (!done) {
-                min = -1;
+                min = -1; //Minimum value of first values in buffers
                 bufId = -1;
                 ArrayList<Integer> b;
 
@@ -161,17 +182,17 @@ public class DataServiceImpl implements DataService {
                     b = buffers.get(i);
                     if (b != null) {
                         if (bufInds.get(i) >= b.size() || b.isEmpty()) {
-                            //remove if done or repeated
+                            //Remove if done
                             if (doneSet.contains(i)) {
                                 System.err.println("Removing " + i);
                                 buffers.remove(i);
-                                //check if all is done
+                                //Check if all is done
                                 if (buffers.isEmpty())
                                     done = true;
                             }
                             else {
                                 System.err.println(i + " needs more data");
-                                //allow more data
+                                //Allow more data to be uploaded
                                 buffers.put(i,new ArrayList<>());
                                 bufConds.get(i).signal();
                                 bufLocks.get(i).unlock();
@@ -195,6 +216,7 @@ public class DataServiceImpl implements DataService {
                                 i--; //repeat this step in for-loop
                             }
                         }
+                        //Update min
                         else if (b.get(bufInds.get(i)) < min || min == -1) {
                             min = b.get(bufInds.get(i));
                             bufId = i;
@@ -204,12 +226,13 @@ public class DataServiceImpl implements DataService {
 
                 if (bufId > -1) {
                     int ind = bufInds.get(bufId);
-                    //Move min from original buffer to output buffer
+                    //Add minimum value to output buffer and update index
                     outBuf.add(buffers.get(bufId).get(ind));
                     bufInds.set(bufId, ind+1);
+                    //Update size of outgoing buffer
                     outCount++;
                 }
-                //Send data if cache limit reached or done
+                //Send data if cache limit reached or merge is done
                 if (outCount >= cache_limit || done) {
                     System.err.println("Sending data");
                     if (!outBuf.isEmpty())

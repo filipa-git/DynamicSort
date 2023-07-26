@@ -12,21 +12,26 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * @author: filip
- * @since: 2023-05-20.
+ * Implementation of data provider service
+ * @author filipa-git
+ * @since 2023-05-20.
  */
 public class DataProviderServiceImpl implements DataProviderService {
     private int list_size = 500000;
     private int n_chunks = 1;
     private final int MAX_VAL = 16000000;
-    private Integer[] listA = new Integer[]{31,54,81,59,50,9,9,395,338,3};
-    private Integer[] listB = new Integer[]{28,67,88,50,3,107,52,395,909,1};
     private BlockingQueue<ArrayList<Integer>> q = new LinkedBlockingQueue<>();
     private BlockingQueue<ArrayList<Integer>> resQ;
     private int testSize, currSize;
     private ReentrantLock sizeLock = new ReentrantLock();
     private long endTime;
 
+    /**
+     * Initialize DataProviderServiceImpl
+     * @param resQ Queue to put results into for control by Main
+     * @param size Max size of data lists (int)
+     * @param chunks Number of data lists to create, one per sorter (int)
+     */
     public DataProviderServiceImpl(BlockingQueue<ArrayList<Integer>> resQ,
                                    int size, int chunks) {
         this.resQ = resQ;
@@ -34,12 +39,18 @@ public class DataProviderServiceImpl implements DataProviderService {
         this.n_chunks = chunks;
     }
 
+    /**
+     * Initialize BlockingQueue 'q' and start a sorting test.
+     * @param cmd String determining the data to create
+     * @return The start time of the test in milliseconds (long)
+     */
     public long initData(String cmd) {
         long sTime;
         ArrayList<ArrayList<Integer>> tempList = new ArrayList<>();
         Random rand = new Random();
+        //Create data depending on cmd
         switch (cmd){
-            case "srand":
+            case "srand": //Seeded random
                 rand.setSeed(42);
                 System.err.println(n_chunks);
                 for (int j = 0; j < n_chunks; j++) {
@@ -52,7 +63,7 @@ public class DataProviderServiceImpl implements DataProviderService {
                     tempList.add(l);
                 }
                 break;
-            case "sgaus3":
+            case "sgaus3": //Seeded gaussian, standard deviation of 1000
                 rand.setSeed(42);
                 System.err.println(n_chunks);
                 for (int j = 0; j < n_chunks; j++) {
@@ -68,7 +79,7 @@ public class DataProviderServiceImpl implements DataProviderService {
                     tempList.add(l);
                 }
                 break;
-            case "sgaus4":
+            case "sgaus4": //Seeded gaussian, standard deviation of 10000
                 rand.setSeed(42);
                 System.err.println(n_chunks);
                 for (int j = 0; j < n_chunks; j++) {
@@ -84,7 +95,7 @@ public class DataProviderServiceImpl implements DataProviderService {
                     tempList.add(l);
                 }
                 break;
-            case "sgaus5":
+            case "sgaus5": //Seeded gaussian, standard deviation of 100000
                 rand.setSeed(42);
                 System.err.println(n_chunks);
                 for (int j = 0; j < n_chunks; j++) {
@@ -100,7 +111,7 @@ public class DataProviderServiceImpl implements DataProviderService {
                     tempList.add(l);
                 }
                 break;
-            case "sgaus6":
+            case "sgaus6": //Seeded gaussian, standard deviation of 1000000
                 rand.setSeed(42);
                 System.err.println(n_chunks);
                 for (int j = 0; j < n_chunks; j++) {
@@ -116,7 +127,7 @@ public class DataProviderServiceImpl implements DataProviderService {
                     tempList.add(l);
                 }
                 break;
-            case "sgaus7":
+            case "sgaus7": //Seeded gaussian, standard deviation of 10000000
                 rand.setSeed(42);
                 System.err.println(n_chunks);
                 for (int j = 0; j < n_chunks; j++) {
@@ -133,7 +144,7 @@ public class DataProviderServiceImpl implements DataProviderService {
                     tempList.add(l);
                 }
                 break;
-            case "rand":
+            case "rand": //Random
                 System.err.println(n_chunks);
                 for (int j = 0; j < n_chunks; j++) {
                     ArrayList<Integer> l = new ArrayList<>();
@@ -145,7 +156,7 @@ public class DataProviderServiceImpl implements DataProviderService {
                     tempList.add(l);
                 }
                 break;
-            case "gaus3":
+            case "gaus3": //Gaussian, standard deviation of 1000
                 System.err.println(n_chunks);
                 for (int j = 0; j < n_chunks; j++) {
                     ArrayList<Integer> l = new ArrayList<>();
@@ -160,7 +171,7 @@ public class DataProviderServiceImpl implements DataProviderService {
                     tempList.add(l);
                 }
                 break;
-            case "gaus4":
+            case "gaus4": //Gaussian, standard deviation of 10000
                 System.err.println(n_chunks);
                 for (int j = 0; j < n_chunks; j++) {
                     ArrayList<Integer> l = new ArrayList<>();
@@ -175,7 +186,7 @@ public class DataProviderServiceImpl implements DataProviderService {
                     tempList.add(l);
                 }
                 break;
-            case "gaus5":
+            case "gaus5": //Gaussian, standard deviation of 100000
                 System.err.println(n_chunks);
                 for (int j = 0; j < n_chunks; j++) {
                     ArrayList<Integer> l = new ArrayList<>();
@@ -190,7 +201,7 @@ public class DataProviderServiceImpl implements DataProviderService {
                     tempList.add(l);
                 }
                 break;
-            case "gaus6":
+            case "gaus6": //Gaussian, standard deviation of 1000000
                 System.err.println(n_chunks);
                 for (int j = 0; j < n_chunks; j++) {
                     ArrayList<Integer> l = new ArrayList<>();
@@ -205,7 +216,7 @@ public class DataProviderServiceImpl implements DataProviderService {
                     tempList.add(l);
                 }
                 break;
-            case "gaus7":
+            case "gaus7": //Gaussian, standard deviation of 10000000
                 System.err.println(n_chunks);
                 for (int j = 0; j < n_chunks; j++) {
                     ArrayList<Integer> l = new ArrayList<>();
@@ -221,7 +232,7 @@ public class DataProviderServiceImpl implements DataProviderService {
                     tempList.add(l);
                 }
                 break;
-            case "sorted":
+            case "sorted": //Pre-sorted lists
                 System.err.println(n_chunks);
                 for (int j = 0; j < n_chunks; j++) {
                     ArrayList<Integer> l = new ArrayList<>();
@@ -232,7 +243,7 @@ public class DataProviderServiceImpl implements DataProviderService {
                     tempList.add(l);
                 }
                 break;
-            case "rsorted":
+            case "rsorted": //Reverse-sorted lists
                 System.err.println(n_chunks);
                 for (int j = n_chunks-1; j >= 0; j--) {
                     ArrayList<Integer> l = new ArrayList<>();
@@ -248,6 +259,7 @@ public class DataProviderServiceImpl implements DataProviderService {
                 return 0;
         }
 
+        //Handle concurrency of size
         sizeLock.lock();
         try {
             testSize = list_size * n_chunks;
@@ -271,22 +283,33 @@ public class DataProviderServiceImpl implements DataProviderService {
         return sTime;
     }
 
+    /**
+     * Get stored end time of test
+     * @return End time of test (long)
+     */
     public long getEndTime() {
         return endTime;
     }
 
+    /**
+     * [Remote] Send data (server -> data provider)
+     * @param data The sent data (ArrayList<Integer)
+     * @throws RemoteException if remote communication fails
+     */
     @Override
     public void uploadData(ArrayList<Integer> data) throws RemoteException {
+        //Store time of upload
         long time = System.currentTimeMillis();
+
         sizeLock.lock();
         try {
-            //update total size
+            //Update total size
             currSize += data.size();
-            //send data to control
+            //Send data to control by Main
             resQ.add(data);
-            //check if test done
+            //Check if test done
             if (currSize >= testSize) {
-                resQ.add(new ArrayList<>()); //stop condition for control
+                resQ.add(new ArrayList<>()); //Stop-condition for control
                 endTime = time;
             }
         }
@@ -295,6 +318,11 @@ public class DataProviderServiceImpl implements DataProviderService {
         }
     }
 
+    /**
+     * [Remote] Download data (data provider -> sorter)
+     * @return The downloaded data
+     * @throws RemoteException if remote communication fails
+     */
     @Override
     public ArrayList<Integer> getData() throws RemoteException {
         ArrayList<Integer> data;
@@ -303,6 +331,7 @@ public class DataProviderServiceImpl implements DataProviderService {
         }
         catch (Exception e) {
             e.printStackTrace();
+            //Send empty list if failed
             data = new ArrayList<>();
         }
         return data;

@@ -1,11 +1,12 @@
 package se.umu.cs.c16fam;
 
-import java.lang.reflect.Array;
 import java.util.*;
 
 /**
- * @author: filip
- * @since: 2023-05-07.
+ * Class for sorting positive integer data utilizing multiple
+ * sorting-functions depending on calculated partial standard deviation
+ * @author filipa-git
+ * @since 2023-05-07.
  */
 public class DynSort {
     private static final int CHOICE_SIZE = 3000000;
@@ -17,16 +18,25 @@ public class DynSort {
     private int nRadix = 0;
     private int nParts = 0;
 
+    /**
+     * DynamicSort function. Determine if  list should be split into k sets
+     * dependant on CHOICE_SIZE. If split, run k-way merge sort. If not, run
+     * dynamic Quicksort.
+     * @param list The data to sort
+     * @return The sorted data (original reference still works)
+     */
     public ArrayList<Integer> dynamicSort(ArrayList<Integer> list) {
         System.err.println("dSort");
         int size = list.size();
 
+        //Split, k-way merge
         if (size > CHOICE_SIZE){
             int k = size / CHOICE_SIZE + ((size % CHOICE_SIZE == 0) ? 0 : 1);
             System.err.println("k: " + k);
             nParts = k;
             kMergeSort(list, k);
         }
+        //No split, dynamic Quicksort
         else {
             cQuickSort(list);
         }
@@ -60,6 +70,12 @@ public class DynSort {
         }
     }
 
+    /**
+     * Split data and merge after sorting using k-way merge sort
+     * @param list  The data to sort
+     * @param k     The amount of chunks to split into
+     * @return The sorted data (original reference still works)
+     */
     private ArrayList<Integer> kMergeSort(ArrayList<Integer> list, int
             k) {
         System.err.println("kSort");
@@ -67,11 +83,11 @@ public class DynSort {
 
         ArrayList<ArrayList<Integer>> parts = new ArrayList<>();
 
-        //partition
+        //Partition data
         for (int i = 0; i < k; i++) {
             ArrayList<Integer> p = new ArrayList<>();
             for (int j = CHOICE_SIZE*i; j < CHOICE_SIZE*(i+1); j++) {
-                if (j >= list.size()) //set j to max to break for loop early
+                if (j >= list.size()) //set j to max to break for-loop early
                     j = CHOICE_SIZE*(i+1);
                 else
                     p.add(list.get(j));
@@ -80,12 +96,12 @@ public class DynSort {
             System.err.println("Added partition " + p.size());
         }
 
-        //sort partitions
+        //Sort partitions using dynamic Quicksort
         for (ArrayList<Integer> part : parts) {
             cQuickSort(part);
         }
 
-        //merge using priority queue
+        //Merge using priority queue
         for (int i = 0; i < k; i++) {
             pq.add(new KNode(i, 0, parts.get(i).get(0)));
         }
@@ -108,10 +124,9 @@ public class DynSort {
     }
 
     /**
-     * Dynamic quicksort that may choose to sort partitions using other
-     * algorithms
-     * @param list
-     * @return
+     * Dynamic Quicksort that may choose to sort partitions using other
+     * algorithms depending on partial standard deviation
+     * @param list  The data to sort
      */
     private void cQuickSort(ArrayList<Integer> list) {
         int low = 0;
@@ -129,7 +144,7 @@ public class DynSort {
             ArrayList<Integer> lowNums = new ArrayList<>();
             ArrayList<Integer> highNums = new ArrayList<>();
 
-            //divide into low and high lists
+            //Divide into low and high lists
             for (int j = low; j < high; j++) {
                 Integer v = list.get(j);
                 if (v < pivot) {
@@ -148,7 +163,7 @@ public class DynSort {
                 }
             }
 
-            //calculate standard deviation
+            //Calculate partial standard deviation
             if (!lowNums.isEmpty()) {
                 double lowMean = lowSum / lowUsed;
                 double lowDev = 0;
@@ -158,7 +173,8 @@ public class DynSort {
                 }
                 lowDev = Math.sqrt(lowDev / (lowUsed-1));
 
-                //Sort lownums
+                //Sort low list
+                //Use dynamic Quicksort if lower deviation, radix sort if higher
                 if (lowDev < DEV_LIMIT)
                     cQuickSort(lowNums);
                 else
@@ -174,14 +190,15 @@ public class DynSort {
                 }
                 highDev = Math.sqrt(highDev / highUsed);
 
-                //sort highnums
+                //Sort high list
+                //Use dynamic Quicksort if lower deviation, radix sort if higher
                 if (highDev < DEV_LIMIT)
                     cQuickSort(highNums);
                 else
                     radixSort(highNums);
             }
 
-            //Add all to same list
+            //Replace original list with sorted lists and pivot element
             list.clear();
             list.addAll(lowNums);
             list.add(pivot);
@@ -191,8 +208,8 @@ public class DynSort {
 
     /**
      * Insertion sort
-     * @param list the list to be sorted
-     * @return the original list sorted
+     * @param list The list to be sorted
+     * @return The sorted data (original reference still works)
      */
     public ArrayList<Integer> insertionSort(ArrayList<Integer> list) {
         nIns++;
@@ -210,9 +227,9 @@ public class DynSort {
     }
 
     /**
-     * quicksort
-     * @param list the list to be sorted
-     * @return the original list sorted
+     * Regular Quicksort
+     * @param list The list to be sorted
+     * @return  The sorted data (original reference still works)
      */
     public static ArrayList<Integer> quickSort(ArrayList<Integer> list) {
         internalQuickSort(list, 0, list.size()-1);
@@ -220,10 +237,10 @@ public class DynSort {
     }
 
     /**
-     * Internal quicksort
-     * @param list the list to sort
-     * @param low lowest index to sort from
-     * @param high highest index to sort to
+     * Internal Quicksort
+     * @param list  The list to sort
+     * @param low   Lowest index to sort from
+     * @param high  Highest index to sort to
      */
     private static void internalQuickSort(ArrayList<Integer> list, int
             low, int high) {
@@ -235,11 +252,11 @@ public class DynSort {
     }
 
     /**
-     * internal partitioning of list for quicksort
-     * @param list the list to sort
-     * @param low lowest index to partition from
-     * @param high highest index to partition to (index of pivot element)
-     * @return index of pivot element after correct placement
+     * Internal partitioning of list for Quicksort
+     * @param list  The list to sort
+     * @param low   Lowest index to partition from
+     * @param high  Highest index to partition to (index of pivot element)
+     * @return Index of pivot element after correct placement
      */
     private static int partition(ArrayList<Integer> list, int low, int high) {
         int pivot = list.get(high);
@@ -257,9 +274,9 @@ public class DynSort {
     }
 
     /**
-     * radix sort. based on https://www.geeksforgeeks.org/radix-sort/
-     * @param list the list to sort
-     * @return the original list sorted
+     * Radix sort. based on https://www.geeksforgeeks.org/radix-sort/
+     * @param list The list to sort
+     * @return The sorted data (original reference still works)
      */
     public ArrayList<Integer> radixSort(ArrayList<Integer> list) {
         if (list.size() <= INS_LIMIT)
@@ -297,15 +314,21 @@ public class DynSort {
     }
 
     /**
-     * merge sort
-     * @param list the list to be sorted
-     * @return the original list sorted
+     * Merge sort
+     * @param list The list to be sorted
+     * @return The sorted data (original reference still works)
      */
     public static ArrayList<Integer> mergeSort(ArrayList<Integer> list) {
         internalMergeSort(list, 0, list.size()-1);
         return list;
     }
 
+    /**
+     * Internal function for merge sort. Split list into halves.
+     * @param list  The data to sort
+     * @param l     The leftmost index to use
+     * @param r     The rightmost index to use
+     */
     private static void internalMergeSort(ArrayList<Integer> list, int l,
                                           int r) {
         if (l < r) {
@@ -318,12 +341,19 @@ public class DynSort {
         }
     }
 
+    /**
+     * Internal function for merging a list for merge sort
+     * @param list  The data
+     * @param l     The leftmost index to merge from
+     * @param m     The mid-point index to merge around
+     * @param r     The rightmost index to merge to
+     */
     private static void internalMerge(ArrayList<Integer> list, int l, int m,
                                       int r) {
         int nl = m-l+1;
         int nr = r-m;
 
-        //copy halves
+        //Copy halves
         ArrayList<Integer> left = new ArrayList<>();
         ArrayList<Integer> right = new ArrayList<>();
 
@@ -333,7 +363,7 @@ public class DynSort {
         for (int j = 0; j < nr; j++)
             right.add(list.get(m+1+j));
 
-        //merge
+        //Merge
         int i = 0, j = 0, k = l;
         while (i < nl && j < nr) {
             int lt = left.get(i);

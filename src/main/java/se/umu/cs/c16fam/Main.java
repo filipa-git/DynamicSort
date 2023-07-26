@@ -1,17 +1,19 @@
 package se.umu.cs.c16fam;
 
-import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
 import java.util.Scanner;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * Main class for running the program. Starts a client, server or data
+ * provider depending on the input arguments.
+ * @author filipa-git
+ * @since 2023-05-07
+ */
 public class Main {
     private static String ARG_MESS = "Valid arguments: {server " +
             "<nSorters> <cacheLimit> <dataHost> " +
@@ -21,8 +23,12 @@ public class Main {
             "<dataPort> [quick|radix]]}|{data <cacheLimit> " +
             "<numberOfSorters>}";
 
+    /**
+     * Start host program (client, server or data provider)
+     * @param args Arguments for host, refer to ARG_MESS above for format
+     */
     public static void main(String[] args) {
-        //Check if server or client
+        //Parse input arguments
         if (args.length > 0) {
             //Create server if first arg is "server"
             if (args[0].equals("server")) {
@@ -69,6 +75,7 @@ public class Main {
                     System.err.println(ARG_MESS);
                 }
             }
+            //Create data provider if first arg is "data"
             else if (args[0].equals("data")) {
                 if (args.length < 3) {
                     System.err.println(ARG_MESS);
@@ -100,9 +107,11 @@ public class Main {
                             int prev;
                             boolean sorted = true, done = false;
                             int tSize = 0;
+                            //check if done or queue has objects
                             while (!done || !resQ.isEmpty()) {
                                 res = resQ.take();
                                 if (!res.isEmpty()) {
+                                    //check if sorted
                                     prev = -1;
                                     for (int i :
                                             res) {
